@@ -21,41 +21,35 @@
   <Definitions>
     <!--***  Problem definition  ***-->
     <AttDef Type="hydrostat" BaseType="" Version="0" Unique="true"> <!-- acbauer - this needs a node set id -->
-      <DetailedDescription>??????Prescribe the hydrostatic pressure. This may be used in conjunction with prescribed pressure
-      boundary conditions, or by itself. When used by itself, the hstat keyword plays two roles. It makes
-      the pressure-Poisson equation non-singular and it permits the pressure for the system to be uniquely
-      determined. When the hstat keyword is used with prescribed pressure boundary conditions, then
-      it only specifies the unique hydrostatic pressure level for the system. In either case, the pressure
-      time-history and field output is adjusted to reflect the specified hydrostatic pressure level.</DetailedDescription>
-      <BriefDescription>??????Prescribe the hydrostatic pressure.</BriefDescription>
       <ItemDefinitions>
-        <Double Name="Value" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Hydrostatic Pressure" />
-          <DetailedDescription>Prescribe the hydrostatic pressure. This may be used in conjunction with prescribed pressure
-          boundary conditions, or by itself. When used by itself, the hstat keyword plays two roles. It makes
-          the pressure-Poisson equation non-singular and it permits the pressure for the system to be uniquely
-          determined. When the hstat keyword is used with prescribed pressure boundary conditions, then
-          it only specifies the unique hydrostatic pressure level for the system. In either case, the pressure
-          time-history and field output is adjusted to reflect the specified hydrostatic pressure level.</DetailedDescription>
-          <ExpressionType>PolyLinearFunction</ExpressionType>
-          <Categories>
-            <Cat>General</Cat>
-          </Categories>
-        </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Scale" />
-          <Categories>
-            <Cat>General</Cat>
-          </Categories>
-        </Double>
+        <Group Name="Hydrostat" Label="Hydrostatic pressure" NumberOfRequiredGroups="1">
+          <ItemDefinitions>
+            <Double Name="Value" Label="Load Curve" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
+              <DetailedDescription>Prescribe the hydrostatic pressure. This may be used in conjunction with prescribed pressure
+              boundary conditions, or by itself. When used by itself, the hstat keyword plays two roles. It makes
+              the pressure-Poisson equation non-singular and it permits the pressure for the system to be uniquely
+              determined. When the hstat keyword is used with prescribed pressure boundary conditions, then
+              it only specifies the unique hydrostatic pressure level for the system. In either case, the pressure
+              time-history and field output is adjusted to reflect the specified hydrostatic pressure level.</DetailedDescription>
+              <ExpressionType>PolyLinearFunction</ExpressionType>
+              <Categories>
+                <Cat>General</Cat>
+              </Categories>
+            </Double>
+            <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+              <Categories>
+                <Cat>General</Cat>
+              </Categories>
+            </Double>
+          </ItemDefinitions>
+        </Group>
       </ItemDefinitions>
     </AttDef>
 
     <!--***  Materials Definitions ***-->
-    <AttDef Type="Material" BaseType="" Version="0" Unique="true" Associations="r">
+    <AttDef Type="Material" Label="Material" BaseType="" Version="0" Unique="true" Associations="r">
       <ItemDefinitions>
-        <Double Name="Density" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Density"/>
+        <Double Name="Density" Label="Density" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <DefaultValue>1.0</DefaultValue>
           <RangeInfo>
             <Min Inclusive="false">0</Min>
@@ -64,9 +58,8 @@
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <!-- may want to consider doing an enum type for Cp and Cv -->
-        <Double Name="Cp" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Cp" />
+        <!-- acbauer - may want to consider doing an enum type for Cp and Cv -->
+        <Double Name="Cp" Label="Cp" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <BriefDescription>Constant pressure specific heat</BriefDescription>
           <RangeInfo>
             <Min Inclusive="true">0</Min>
@@ -75,8 +68,7 @@
             <Cat>Energy Equation</Cat>
           </Categories>
         </Double>
-        <Double Name="Cv" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Cv" />
+        <Double Name="Cv" Label="Cv" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <BriefDescription>Constant volume specific heat</BriefDescription>
           <RangeInfo>
             <Min Inclusive="true">0</Min>
@@ -85,15 +77,21 @@
             <Cat>Energy Equation</Cat>
           </Categories>
         </Double>
-        <Double Name="k" Version="0" AdvanceLevel="0" NumberOfRequiredValues="6">
-          <Labels CommonLabel="Thermal conductivity" />
+        <Double Name="k" Label="Thermal conductivity" Version="0" AdvanceLevel="0" NumberOfRequiredValues="6">
           <BriefDescription>Thermal conductivity tensor (symmetric)</BriefDescription>
+          <ComponentLabels>
+            <Label>XX</Label>
+            <Label>XY</Label>
+            <Label>XZ</Label>
+            <Label>YY</Label>
+            <Label>YZ</Label>
+            <Label>ZZ</Label>
+          </ComponentLabels>
           <Categories>
             <Cat>Energy Equation</Cat>
           </Categories>
         </Double>
-        <Double Name="mu" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Mu"/>
+        <Double Name="mu" Label="Mu" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <DefaultValue>1.0</DefaultValue>
           <BriefDescription>Molecular viscosity</BriefDescription>
           <RangeInfo>
@@ -103,15 +101,13 @@
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="Tref" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Reference Temperature"/>
+        <Double Name="Tref" Label="Reference Temperature" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <DefaultValue>0.0</DefaultValue>
           <Categories>
             <Cat>Energy Equation</Cat>
           </Categories>
         </Double>
-        <Double Name="beta" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Beta"/>
+        <Double Name="beta" Label="Beta" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <DefaultValue>0.0</DefaultValue>
           <BriefDescription>Coefficient of thermal expansion</BriefDescription>
           <Categories>
@@ -123,51 +119,57 @@
 
     <!--*** Body force definitions ***-->
     <AttDef Type="BodyForce" BaseType="" Version="0" Unique="false" Associations="r"/>
-    <AttDef Type="GravityForce" BaseType="BodyForce" Version="0" Unique="true" Associations="r">
+    <AttDef Type="GravityForce" Label="Gravity Force" BaseType="BodyForce" Version="0" Unique="true" Associations="r">
       <ItemDefinitions>
-        <Double Name="Gravity Force" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Load Curve"/>
+        <Double Name="GravityForce" Label="Load Curve" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="3">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="3">
+          <ComponentLabels>
+            <Label>X</Label>
+            <Label>Y</Label>
+            <Label>Z</Label>
+          </ComponentLabels>
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="Boussinesq Force" BaseType="BodyForce" Version="0" Unique="true" Associations="r">
+    <AttDef Type="BoussinesqForce" Label="Boussinesq Force" BaseType="BodyForce" Version="0" Unique="true" Associations="r">
       <ItemDefinitions>
-        <Double Name="BoussinesqForce" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Load Curve"/>
+        <Double Name="BoussinesqForce" Label="Load Curve" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
+            <Cat>Energy Equation</Cat>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="3">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="3">
+          <ComponentLabels>
+            <Label>X</Label>
+            <Label>Y</Label>
+            <Label>Z</Label>
+          </ComponentLabels>
           <Categories>
             <Cat>Energy Equation</Cat>
+            <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="Heat Source" BaseType="BodyForce" Version="0" Unique="true" Associations="r">
+    <AttDef Type="HeatSource" Label="Heat Source" BaseType="BodyForce" Version="0" Unique="true" Associations="r">
       <ItemDefinitions>
-        <Double Name="Heat Source" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Heat Source"/>
+        <Double Name="Heat Source" Label="Load Curve" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
             <Cat>Energy Equation</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <Categories>
             <Cat>Energy Equation</Cat>
           </Categories>
@@ -178,17 +180,20 @@
     <!--***  Initial Condition Definitions ***-->
     <AttDef Type="InitialConditions" BaseType="" Version="0" Abstract="0">
       <ItemDefinitions>
-        <Group Name="Initial Conditions" NumberOfRequiredValues="1">
+        <Group Name="InitialConditions" Label="Initial Conditions" NumberOfRequiredGroups="1">
           <ItemDefinitions>
-            <Double Name="Velocity" Version="0" NumberOfRequiredValues="3">
-              <Labels CommonLabel="Initial velocity" />
+            <Double Name="Velocity" Label="Initial velocity" Version="0" NumberOfRequiredValues="3">
+              <ComponentLabels>
+                <Label>X</Label>
+                <Label>Y</Label>
+                <Label>Z</Label>
+              </ComponentLabels>
               <DefaultValue>0</DefaultValue>
               <Categories>
                 <Cat>Incompressible Navier-Stokes</Cat>
               </Categories>
             </Double>
-            <Double Name="tke" Version="0" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Initial turbulent kinetic energy" />
+            <Double Name="tke" Label="Initial turbulent kinetic energy" Version="0" NumberOfRequiredValues="1">
               <RangeInfo>
                 <Min Inclusive="false">0</Min>
               </RangeInfo>
@@ -196,8 +201,7 @@
                 <Cat>Incompressible Navier-Stokes</Cat>
               </Categories>
             </Double>
-            <Double Name="itdr" Version="0" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Initial turbulent dissipation rate" />
+            <Double Name="itdr" Label="Initial turbulent dissipation rate" Version="0" NumberOfRequiredValues="1">
               <RangeInfo>
                 <Min Inclusive="false">0</Min>
               </RangeInfo>
@@ -205,8 +209,7 @@
                 <Cat>Incompressible Navier-Stokes</Cat>
               </Categories>
             </Double>
-            <Double Name="idts" Version="0" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Inverse dissipation time scale" />
+            <Double Name="idts" Label="Inverse dissipation time scale" Version="0" NumberOfRequiredValues="1">
               <RangeInfo>
                 <Min Inclusive="false">0</Min>
               </RangeInfo>
@@ -214,8 +217,7 @@
                 <Cat>Incompressible Navier-Stokes</Cat>
               </Categories>
             </Double>
-            <Double Name="tv" Version="0" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Turbulent viscosity (Spalart-Allmaras and DES models)" />
+            <Double Name="tv" Label="Turbulent viscosity (Spalart-Allmaras and DES models)" Version="0" NumberOfRequiredValues="1">
               <RangeInfo>
                 <Min Inclusive="false">0</Min>
               </RangeInfo>
@@ -224,20 +226,17 @@
               </Categories>
             </Double>
             <!-- acbauer - should be temperature or energy equation -->
-            <Double Name="temperature" Version="0" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Temperature" />
+            <Double Name="temperature" Label="Temperature" Version="0" NumberOfRequiredValues="1">
               <Categories>
                 <Cat>Energy Equation</Cat>
               </Categories>
             </Double>
-            <Double Name="internalenergy" Version="0" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Internal Energy" />
+            <Double Name="internalenergy" Label="Internal Energy" Version="0" NumberOfRequiredValues="1">
               <Categories>
                 <Cat>Energy Equation</Cat>
               </Categories>
             </Double>
-            <Double Name="enthalpy" Version="0" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Enthalpy" />
+            <Double Name="enthalpy" Label="Enthalpy" Version="0" NumberOfRequiredValues="1">
               <Categories>
                 <Cat>Energy Equation</Cat>
               </Categories>
@@ -250,34 +249,30 @@
     <!--***  Boundary Condition Definitions ***-->
     <AttDef Type="BoundaryCondition" BaseType="" Abstract="1" Version="0" Unique="false" Associations="f" />
     <!-- BC structure to enforce uniqueness/prevent overspecification of BCs on a boundary -->
-    <AttDef Type="EnthalpyBoundaryCondition" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
+    <AttDef Type="EnthalpyBoundaryCondition" Label="Enthalpy" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
       <ItemDefinitions>
-        <Double Name="LoadCurve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Load Curve" />
+        <Double Name="LoadCurve" Label="Load Curve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
             <Cat>Energy Equation</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <Categories>
             <Cat>Energy Equation</Cat>
           </Categories>
         </Double>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="Turbulent Dissipation" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
+    <AttDef Type="Turbulent Dissipation" Label="Turbulent Dissipation" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
       <ItemDefinitions>
-        <Double Name="LoadCurve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Load Curve" />
+        <Double Name="LoadCurve" Version="0" Label="Load Curve" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
@@ -285,69 +280,69 @@
       </ItemDefinitions>
     </AttDef>
     <!-- both wall bc and penetration bc are written out as distancebc but wall won't have any inputs whereaas penetration will -->
-    <AttDef Type="Wall" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f"/>
-    <AttDef Type="Penetration" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
+    <AttDef Type="Wall" Lable="Wall" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
       <ItemDefinitions>
-        <Double Name="LoadCurve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Load Curve" />
+        <Void Name="void" Label="Not used - do not show" Version="0" NumberOfRequiredValues="0" AdvanceLevel="1">
+          <Categories>
+            <Cat>Incompressible Navier-Stokes</Cat>
+          </Categories>
+        </Void>
+      </ItemDefinitions>
+    </AttDef>
+    <AttDef Type="Penetration" Label="Penetration" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
+      <ItemDefinitions>
+        <Double Name="LoadCurve" Label="Load Curve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="Pressure" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
+    <AttDef Type="Pressure" Label="Pressure" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
       <ItemDefinitions>
-        <Double Name="LoadCurve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Load Curve" />
+        <Double Name="LoadCurve" Label="Load Curve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="Temperature" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
+    <AttDef Type="Temperature" Label="Temperature" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
       <ItemDefinitions>
-        <Double Name="LoadCurve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Load Curve" />
+        <Double Name="LoadCurve" Label="Load Curve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
             <Cat>Energy Equation</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <Categories>
             <Cat>Energy Equation</Cat>
           </Categories>
         </Double>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="Turbulent Viscosity" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
+    <AttDef Type="TurbulentViscosity" Label="Turbulent Viscosity" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f">
       <ItemDefinitions>
-        <Double Name="LoadCurve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Load Curve" />
+        <Double Name="LoadCurve" Label="Load Curve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
@@ -356,72 +351,64 @@
     </AttDef>
 
     <!--*** Velocity boundary conditions ***-->
-    <AttDef Type="VelXBoundaryCondition" BaseType="BoundaryCondition" Abstract="1" Version="0" Unique="true" Associations="f" >
+    <AttDef Type="VelXBoundaryCondition" Label="X Velocity" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f" >
       <ItemDefinitions>
-        <Double Name="LoadCurve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Load Curve" />
+        <Double Name="LoadCurve" Label="Load Curve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="VelYBoundaryCondition" BaseType="BoundaryCondition" Abstract="1" Version="0" Unique="true" Associations="f" >
+    <AttDef Type="VelYBoundaryCondition" Label="Y Velocity" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f" >
       <ItemDefinitions>
-        <Double Name="LoadCurve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Load Curve" />
+        <Double Name="LoadCurve" Label="Load Curve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="VelZBoundaryCondition" BaseType="BoundaryCondition" Abstract="1" Version="0" Unique="true" Associations="f" >
+    <AttDef Type="VelZBoundaryCondition" Label="Z Velocity" BaseType="BoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f" >
       <ItemDefinitions>
-        <Double Name="LoadCurve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Load Curve" />
+        <Double Name="LoadCurve" Label="Load Curve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="SymmetryVelXBoundaryCondition" BaseType="VelXBoundaryCondition" Abstract="1" Version="0" Unique="true" Associations="f" />
-    <AttDef Type="SymmetryVelYBoundaryCondition" BaseType="VelYBoundaryCondition" Abstract="1" Version="0" Unique="true" Associations="f" />
-    <AttDef Type="SymmetryVelZBoundaryCondition" BaseType="VelZBoundaryCondition" Abstract="1" Version="0" Unique="true" Associations="f" />
+    <AttDef Type="SymmetryVelXBoundaryCondition" Label="X Symmetry Velocity" BaseType="VelXBoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f" />
+    <AttDef Type="SymmetryVelYBoundaryCondition" Label="Y Symmetry Velocity" BaseType="VelYBoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f" />
+    <AttDef Type="SymmetryVelZBoundaryCondition" Label="Z Symmetry Velocity" BaseType="VelZBoundaryCondition" Abstract="0" Version="0" Unique="true" Associations="f" />
 
-    <AttDef Type="Heat Flux" BaseType="BoundaryCondition" Abstract="1" Version="0" Unique="true" Associations="f" >
+    <AttDef Type="HeatFlux" Label="Heat Flux" BaseType="BoundaryCondition" Abstract="1" Version="0" Unique="true" Associations="f" >
       <ItemDefinitions>
-        <Double Name="LoadCurve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
-          <Labels CommonLabel="Load Curve" />
+        <Double Name="LoadCurve" Label="Load Curve" Version="0" NumberOfRequiredValues="1" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false">
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
             <Cat>Energy Equation</Cat>
           </Categories>
         </Double>
-        <Double Name="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Scale" />
+        <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <Categories>
             <Cat>Energy Equation</Cat>
           </Categories>
@@ -432,8 +419,7 @@
     <!--***  Execution Definitions ***-->
     <AttDef Type="LoadBalancer" BaseType="" Abstract="0" Version="0" Unique="true">
       <ItemDefinitions>
-        <String Name="Method" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Load Balance Method"/>
+        <String Name="Method" Label="Load Balance Method" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
           <DiscreteInfo DefaultIndex="4">
             <Value Enum="RCB">rcb</Value>
             <Value Enum="RIB">rib</Value>
@@ -450,8 +436,7 @@
 
     <AttDef Type="ExecutionControl" BaseType="" Abstract="0" Version="0" Unique="true">
       <ItemDefinitions>
-        <Int Name="ExecutionControl" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Execution Control Frequency Checking"/>
+        <Int Name="ExecutionControl" Label="Execution Control Frequency Checking"  Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
           <BriefDescription>Frequency of checking execution control file</BriefDescription>
           <RangeInfo>
             <Min Inclusive="true">0</Min>
@@ -463,18 +448,16 @@
 
     <AttDef Type="Output" BaseType="" Abstract="0" Version="0" Unique="false" Associations="">
       <ItemDefinitions>
-        <Group Name="Restart Output" NumberOfRequiredGroups="1">
+        <Group Name="RestartOutput" Label="Restart Output" NumberOfRequiredGroups="1">
           <ItemDefinitions>
-            <Int Name="frequency" Version="0" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Frequency"/>
+            <Int Name="frequency" Label="Frequency" Version="0" NumberOfRequiredValues="1">
               <BriefDescription>Output dump file frequency. 0 implies do not output.</BriefDescription>
               <RangeInfo>
                 <Min Inclusive="true">0</Min>
               </RangeInfo>
               <DefaultValue>0</DefaultValue>
             </Int>
-            <String Name="type" Version="0" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Type"/>
+            <String Name="type" Label="Type" Version="0" NumberOfRequiredValues="1">
               <BriefDescription>Output dump format</BriefDescription>
               <DiscreteInfo DefaultIndex="0">
                 <Value Enum="Serial">serial</Value>
@@ -483,18 +466,16 @@
             </String>
           </ItemDefinitions>
         </Group>
-        <Group Name="Field Output" NumberOfRequiredGroups="1">
+        <Group Name="FieldOutput" Label="Field Output" NumberOfRequiredGroups="1">
           <ItemDefinitions>
-            <Int Name="frequency" Version="0" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Frequency"/>
+            <Int Name="frequency" Label="Frequency" Version="0" NumberOfRequiredValues="1">
               <BriefDescription>Output dump file frequency. 0 implies do not output.</BriefDescription>
               <RangeInfo>
                 <Min Inclusive="true">0</Min>
               </RangeInfo>
               <DefaultValue>20</DefaultValue>
             </Int>
-            <String Name="type" Version="0" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Type"/>
+            <String Name="type" Label="Type" Version="0" NumberOfRequiredValues="1">
               <BriefDescription>Output field format</BriefDescription>
               <DiscreteInfo DefaultIndex="4">
                 <Value Enum="GMV ASCII">gmv_ascii</Value>
@@ -512,22 +493,19 @@
 
     <AttDef Type="StatusInformation" BaseType="" Abstract="0" Version="0" Unique="true">
       <ItemDefinitions>
-        <Int Name="minmaxfrequency" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Interval to report min/max velocity values"/>
+        <Int Name="minmaxfrequency" Label="Interval to report min/max velocity values" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
           <DefaultValue>10</DefaultValue>
           <RangeInfo>
             <Min Inclusive="yes">0</Min>
           </RangeInfo>
         </Int>
-        <Int Name="tifrequency" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Time history write frequency"/>
+        <Int Name="tifrequency" Label="Time history write frequency" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
           <DefaultValue>1</DefaultValue>
           <RangeInfo>
             <Min Inclusive="yes">0</Min>
           </RangeInfo>
         </Int>
-        <String Name="PrintLevel" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-          <Labels CommonLabel="ASCII Print Level"/>
+        <String Name="PrintLevel" Label="ASCII Print Level" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
           <BriefDescription>Controls the amount of data written to the ASCII (human-readable) output file</BriefDescription>
           <DiscreteInfo DefaultValue="0">
             <Value Enum="param">param</Value>
@@ -535,8 +513,7 @@
             <Value Enum="verbose">verbose</Value>
           </DiscreteInfo>
         </String>
-        <Int Name="hcfrequency" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Interval (only used if ASCII Print Level is verbose)"/>
+        <Int Name="hcfrequency" Label="Interval (only used if ASCII Print Level is verbose)" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
           <DefaultValue>0</DefaultValue>
           <RangeInfo>
             <Min Inclusive="yes">0</Min>
@@ -548,17 +525,13 @@
     <AttDef Type="VarOutput" BaseType="" Abstract="1" Version="0" Unique="false" AdvanceLevel="0" NumberOfRequiredValues="1"/>
     <AttDef Type="HistVarOutput" BaseType="VarOutput" Abstract="0" Version="0" Unique="false">
       <ItemDefinitions>
-        <Int Name="Id" Version="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Id"/>
+        <Int Name="Id" Label="Id" Version="0" NumberOfRequiredValues="1">
           <RangeInfo>
             <Min Inlcusive="true">0</Min>
           </RangeInfo>
         </Int>
-        <String Name="varname" Version="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Variable Name"/>
-        </String>
-        <Int Name="type" Version="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Type"/>
+        <String Name="varname" Label="Variable Name" Version="0" NumberOfRequiredValues="1"/>
+        <Int Name="type" Label="Type" Version="0" NumberOfRequiredValues="1">
           <DiscreteInfo>
             <Value Enum="Element">elem</Value>
             <Value Enum="Node">node</Value>
@@ -569,11 +542,8 @@
     </AttDef>
     <AttDef Type="NodeElemPlotVarOutput" BaseType="VarOutput" Abstract="0" Version="0" Unique="false">
       <ItemDefinitions>
-        <String Name="varname" Version="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Variable Name"/>
-        </String>
-        <Int Name="type" Version="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Type"/>
+        <String Name="varname" Label="Variable Name" Version="0" NumberOfRequiredValues="1"/>
+        <Int Name="type" Label="Type" Version="0" NumberOfRequiredValues="1">
           <DiscreteInfo>
             <Value Enum="Element">elem</Value>
             <Value Enum="Node">node</Value>
@@ -583,27 +553,21 @@
     </AttDef>
     <AttDef Type="SideSetPlotVarOutput" BaseType="VarOutput" Abstract="0" Version="0" Unique="false">
       <ItemDefinitions>
-        <Int Name="Id" Version="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Id"/>
+        <Int Name="Id" Label="Id" Version="0" NumberOfRequiredValues="1">
           <RangeInfo>
             <Min Inlcusive="true">0</Min>
           </RangeInfo>
         </Int>
-        <String Name="varname" Version="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Variable Name"/>
-        </String>
+        <String Name="varname" Label="Variable Name" Version="0" NumberOfRequiredValues="1"/>
       </ItemDefinitions>
     </AttDef>
 
     <!--*** Temporal statistics options ***-->
     <AttDef Type="TempStatVarOutput" BaseType="" Abstract="1" Version="0" Unique="false"/>
-    <AttDef Type="NodeElemTempStatVarOutput" BaseType="TempStatVarOutput" Abstract="0" Version="0" Unique="false">
+    <AttDef Type="NodeElemTempStatVarOutput" Label="NodeElemTempStatVarOutput" BaseType="TempStatVarOutput" Abstract="0" Version="0" Unique="false">
       <ItemDefinitions>
-        <String Name="varname" Version="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Variable Name"/>
-        </String>
-        <Int Name="type" Version="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Type"/>
+        <String Name="varname" Label="Variable Name" Version="0" NumberOfRequiredValues="1"/>
+        <Int Name="type" Label="Type" Version="0" NumberOfRequiredValues="1">
           <DiscreteInfo>
             <Value Enum="Element">elem</Value>
             <Value Enum="Node">node</Value>
@@ -611,56 +575,50 @@
         </Int>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="SideSetTempStatVarOutput" BaseType="TempStatVarOutput" Abstract="0" Version="0" Unique="false">
+    <AttDef Type="SideSetTempStatVarOutput" Label="SideSetTempStatVarOutput" BaseType="TempStatVarOutput" Abstract="0" Version="0" Unique="false">
       <ItemDefinitions>
-        <Int Name="Id" Version="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Id"/>
+        <Int Name="Id" Label="Id" Version="0" NumberOfRequiredValues="1">
           <RangeInfo>
             <Min Inclusive="true">0</Min>
           </RangeInfo>
         </Int>
-        <String Name="varname" Version="0" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Variable Name"/>
-        </String>
+        <String Name="varname" Label="Variable Name" Version="0" NumberOfRequiredValues="1"/>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="TempStatVarStatistics" BaseType="" Abstract="0" Version="0" Unique="false">
-      <Group Name="Temporal Statistics" NumberOfRequiredGroups="1">
-        <ItemDefinitions>
-          <Double Name="StartTime" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-            <Labels CommonLabel="Start Time"/>
-            <DefaultValue>0.0</DefaultValue>
-          </Double>
-          <Double Name="EndTime" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-            <Labels CommonLabel="End Time"/>
-            <DefaultValue>1.0</DefaultValue>
-          </Double>
-          <Double Name="PlotWinSize" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-            <Labels CommonLabel="Time Window Size"/>
-            <DefaultValue>0.1</DefaultValue>
-            <RangeInfo>
-              <Min Inclusive="false">0.0</Min>
-            </RangeInfo>
-          </Double>
-        </ItemDefinitions>
-      </Group>
+    <AttDef Type="TempStatVarStatistics" Label="TempStatVarStatistics" BaseType="" Abstract="0" Version="0" Unique="true">
+      <ItemDefinitions>
+        <Group Name="TemporalStatistics" Label="Temporal Statistics" NumberOfRequiredGroups="1">
+          <ItemDefinitions>
+            <Double Name="StartTime" Label="Start Time" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+              <DefaultValue>0.0</DefaultValue>
+            </Double>
+            <Double Name="EndTime" Label="End Time" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+              <DefaultValue>1.0</DefaultValue>
+            </Double>
+            <Double Name="PlotWinSize" Label="Time Window Size" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+              <DefaultValue>0.1</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="false">0.0</Min>
+              </RangeInfo>
+            </Double>
+          </ItemDefinitions>
+        </Group>
+      </ItemDefinitions>
     </AttDef>
 
     <!--*** Solver Definitions ***-->
-    <AttDef Type="ppesolver" BaseType="" Version="0" Unique="" Associations="">
+    <AttDef Type="ppesolver" Label="ppesolver" BaseType="" Version="0" Unique="" Associations="">
       <ItemDefinitions>
-        <Group Name="Pressure Poisson Solver" NumberOfRequiredGroups="1">
+        <Group Name="PressurePoissonSolver" Label="Pressure Poisson Solver" NumberOfRequiredGroups="1">
           <ItemDefinitions>
-            <String Name="type" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Type"/>
+            <String Name="type" Label="Type" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DiscreteInfo DefaultValue="0">
                 <Value Enum="AMG">AMG</Value>
                 <Value Enum="SSORCG">SSORCG</Value>
                 <Value Enum="JPCG">JPCG</Value>
               </DiscreteInfo>
             </String>
-            <Int Name="itmax" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Maximum number of iterations"/>
+            <Int Name="itmax" Label="Maximum number of iterations" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <BriefDescription>The maximum number of iterations. In the case of AMG, this is the maximum number of V or W cycles.</BriefDescription>
               <DefaultValue>500</DefaultValue>
               <RangeInfo>
@@ -668,8 +626,7 @@
                 <Max Inclusive="true">500</Max>
               </RangeInfo>
             </Int>
-            <Int Name="itchk" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Convergence criteria checking frequency"/>
+            <Int Name="itchk" Label="Convergence criteria checking frequency" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <BriefDescription>The number of iterations to take before checking convergence criteria.</BriefDescription>
               <DefaultValue>2</DefaultValue>
               <RangeInfo>
@@ -683,16 +640,14 @@
             <Void Name="convergence" Label="Convergence metrics" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
               <BriefDescription>Enable/disable the convergence metrics or the linear solver.</BriefDescription>
             </Void>
-            <Double Name="eps" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Convergence criteria"/>
+            <Double Name="eps" Label="Convergence criteria" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DefaultValue>1e-05</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="false">0.0</Min>
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
-            <Double Name="pivot" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Preconditioner zero pivot value"/>
+            <Double Name="pivot" Label="Preconditioner zero pivot value" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DefaultValue>1e-16</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="false">0.0</Min>
@@ -703,12 +658,11 @@
         </Group>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="momentumsolver" BaseType="" Version="0">
+    <AttDef Type="momentumsolver" Label="Momentum Solver" BaseType="" Version="0">
       <ItemDefinitions>
-        <Group Name="Momentum Solver" NumberOfRequiredGroups="1">
+        <Group Name="MomentumSolver" Label="Momentum Solver" NumberOfRequiredGroups="1">
           <ItemDefinitions>
-            <String Name="type" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Type"/>
+            <String Name="type" Label="Type" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DiscreteInfo DefaultValue="0">
                 <Value Enum="Flexible GMRES">FGMRES</Value>
                 <Value Enum="ILU-Preconditioned FGMRES">ILUFGMRES</Value>
@@ -716,16 +670,14 @@
                 <Value Enum="ILU-Preconditioned GMRES">ILUGMRES</Value>
               </DiscreteInfo>
             </String>
-            <Int Name="restart" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Number of restart vectors"/>
+            <Int Name="restart" Label="Number of restart vectors" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DefaultValue>30</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="false">0</Min>
                 <Max Inclusive="true">100</Max>
               </RangeInfo>
             </Int>
-            <Int Name="itmax" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Maximum number of iterations"/>
+            <Int Name="itmax" Label="Maximum number of iterations" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <BriefDescription>The maximum number of iterations. In the case of AMG, this is the maximum number of V or W cycles.</BriefDescription>
               <DefaultValue>500</DefaultValue>
               <RangeInfo>
@@ -733,8 +685,7 @@
                 <Max Inclusive="true">500</Max>
               </RangeInfo>
             </Int>
-            <Int Name="itchk" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Convergence criteria checking frequency"/>
+            <Int Name="itchk" Label="Convergence criteria checking frequency" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <BriefDescription>The number of iterations to take before checking convergence criteria.</BriefDescription>
               <DefaultValue>2</DefaultValue>
               <RangeInfo>
@@ -748,8 +699,7 @@
             <Void Name="convergence" Label="Convergence metrics" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
               <BriefDescription>Enable/disable the convergence metrics or the solver.</BriefDescription>
             </Void>
-            <Double Name="eps" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Convergence criteria"/>
+            <Double Name="eps" Label="Convergence criteria" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DefaultValue>1e-05</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="false">0.0</Min>
@@ -760,23 +710,73 @@
         </Group>
       </ItemDefinitions>
     </AttDef>
-    <!--*** The transport solver is the same as the momentum solver ***-->
-    <AttDef Type="transportsolver" BaseType="momentumsolver" Version="0"/> <!-- acbauer - shjows up as Momentum Solver in gui -->
+    <!--*** The transport solver is the same as the momentum solver but i copy it so that I can set the group label properly***-->
+    <AttDef Type="transportsolver" Label="Transport Solver" BaseType="" Version="0">
+      <ItemDefinitions>
+        <Group Name="TransportSolver" Label="Transport Solver" NumberOfRequiredGroups="1">
+          <ItemDefinitions>
+            <String Name="type" Label="Type" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
+              <DiscreteInfo DefaultValue="0">
+                <Value Enum="Flexible GMRES">FGMRES</Value>
+                <Value Enum="ILU-Preconditioned FGMRES">ILUFGMRES</Value>
+                <Value Enum="GMRES">GMRES</Value>
+                <Value Enum="ILU-Preconditioned GMRES">ILUGMRES</Value>
+              </DiscreteInfo>
+            </String>
+            <Int Name="restart" Label="Number of restart vectors" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
+              <DefaultValue>30</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="false">0</Min>
+                <Max Inclusive="true">100</Max>
+              </RangeInfo>
+            </Int>
+            <Int Name="itmax" Label="Maximum number of iterations" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
+              <BriefDescription>The maximum number of iterations. In the case of AMG, this is the maximum number of V or W cycles.</BriefDescription>
+              <DefaultValue>500</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="false">0</Min>
+                <Max Inclusive="true">500</Max>
+              </RangeInfo>
+            </Int>
+            <Int Name="itchk" Label="Convergence criteria checking frequency" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
+              <BriefDescription>The number of iterations to take before checking convergence criteria.</BriefDescription>
+              <DefaultValue>2</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="false">0</Min>
+                <Max Inclusive="true">25</Max>
+              </RangeInfo>
+            </Int>
+            <Void Name="diagnostics" Label="Diagnostics" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
+              <BriefDescription>Enable/disable the diagnostic information from the solver.</BriefDescription>
+            </Void>
+            <Void Name="convergence" Label="Convergence metrics" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
+              <BriefDescription>Enable/disable the convergence metrics or the solver.</BriefDescription>
+            </Void>
+            <Double Name="eps" Label="Convergence criteria" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
+              <DefaultValue>1e-05</DefaultValue>
+              <RangeInfo>
+                <Min Inclusive="false">0.0</Min>
+                <Max Inclusive="true">1.0</Max>
+              </RangeInfo>
+            </Double>
+          </ItemDefinitions>
+        </Group>
+      </ItemDefinitions>
+
+    </AttDef>
 
     <!--*** Solution method ***-->
     <AttDef Type="solution_method" BaseType="" Version="0">
       <ItemDefinitions>
-        <Group Name="Solution Method" NumberOfRequiredGroups="1">
+        <Group Name="SolutionMethod" Label="Solution Method" NumberOfRequiredGroups="1">
           <ItemDefinitions>
-            <String Name="strategy" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Strategy"/>
+            <String Name="strategy" Label="Strategy" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DiscreteInfo DefaultValue="0">
                 <Value Enum="Projection">projection</Value>
                 <Value Enum="Picard">picard</Value>
               </DiscreteInfo>
             </String>
-            <String Name="pressure_update" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Pressure Update"/>
+            <String Name="pressure_update" Label="Pressure Update" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DiscreteInfo DefaultValue="1">
                 <Value Enum="Chorin">chorin</Value>
                 <Value Enum="Gradient">gradient</Value>
@@ -786,72 +786,63 @@
             <Void Name="curlfree_fix" Label="Curl Free Fix (Picard only)" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
               <BriefDescription>Enable/disable the diagnostic information from the solver.</BriefDescription>
             </Void>
-            <Int Name="itmax" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Maximum number of iterations"/>
+            <Int Name="itmax" Label="Maximum number of iterations" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <BriefDescription>The maximum number of non-linear iterations to be taken during each time step.</BriefDescription>
               <DefaultValue>5</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="false">0</Min>
               </RangeInfo>
             </Int>
-            <Double Name="eps" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Convergence criteria"/>
+            <Double Name="eps" Label="Convergence criteria" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DefaultValue>1e-04</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="false">0.0</Min>
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
-            <Double Name="eps_dist" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Convergence criteria for normal-distance function"/>
+            <Double Name="eps_dist" Label="Convergence criteria for normal-distance function" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DefaultValue>1e-05</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="false">0.0</Min>
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
-            <Double Name="eps_p0" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Convergence criteria for initial div-free projection and initial pressure computation"/>
+            <Double Name="eps_p0" Label="Convergence criteria for initial div-free projection and initial pressure computation" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DefaultValue>1e-05</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="false">0.0</Min>
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
-            <Double Name="velrelax" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Velocity update under-relaxation parameter"/>
+            <Double Name="velrelax" Label="Velocity update under-relaxation parameter" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DefaultValue>1.0</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="true">0.0</Min>
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
-            <Double Name="enerelax" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Energy update under-relaxation parameter"/>
+            <Double Name="enerelax" Label="Energy update under-relaxation parameter" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DefaultValue>1.0</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="true">0.0</Min>
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
-            <Double Name="nutrelax" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Spalart-Allmaras under-relaxation parameter"/>
+            <Double Name="nutrelax" Label="Spalart-Allmaras under-relaxation parameter" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DefaultValue>1.0</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="true">0.0</Min>
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
-            <Double Name="tkerelax" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Turbulent kinetic energy under-relaxation parameter"/>
+            <Double Name="tkerelax" Label="Turbulent kinetic energy under-relaxation parameter" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DefaultValue>1.0</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="true">0.0</Min>
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
-            <Double Name="epsrelax" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Turbulent dissipation rate under-relaxation parameter"/>
+            <Double Name="epsrelax" Label="Turbulent dissipation rate under-relaxation parameter" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DefaultValue>1.0</DefaultValue>
               <RangeInfo>
                 <Min Inclusive="true">0.0</Min>
@@ -869,20 +860,49 @@
       </ItemDefinitions>
     </AttDef>
 
+    <!--*** Time information ***-->
+    <AttDef Type="simulationtime" BasetType="" Version="0">
+      <ItemDefinitions>
+        <Int Name="nsteps" Label="Maximum number of time steps" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+          <BriefDescription>The maximum number of time steps to be taken during a single simulation.</BriefDescription>
+          <DefaultValue>10</DefaultValue>
+          <RangeInfo>
+            <Min Inclusive="true">1</Min>
+            <Min Inclusive="true">10e9</Min>
+          </RangeInfo>
+          <DefaultValue>0</DefaultValue>
+        </Int>
+        <Double Name="term" Label="Simulation termination time" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+          <BriefDescription>Define the simulation termination time, in units consistent with the problem definition.</BriefDescription>
+          <DefaultValue>1</DefaultValue>
+          <RangeInfo>
+            <Min Inclusive="false">0</Min>
+          </RangeInfo>
+          <DefaultValue>0</DefaultValue>
+        </Double>
+        <Double Name="deltat" Label="Time step size" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+          <BriefDescription>Define the time step size to be used. This value may be over-ridden by physics specific constraints on the time step.</BriefDescription>
+          <DefaultValue>0.01</DefaultValue>
+          <RangeInfo>
+            <Min Inclusive="false">0</Min>
+          </RangeInfo>
+          <DefaultValue>0</DefaultValue>
+        </Double>
+      </ItemDefinitions>
+    </AttDef>
+
     <!--*** Time integration  method ***-->
     <AttDef Type="time_integration" BaseType="" Version="0">
       <ItemDefinitions>
-        <Group Name="Time Integration" NumberOfRequiredGroups="1">
+        <Group Name="TimeIntegration" Label="Time Integration" NumberOfRequiredGroups="1">
           <ItemDefinitions>
-            <String Name="type" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Method"/>
+            <String Name="type" Label="Method" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <DiscreteInfo DefaultValue="0">
                 <Value Enum="Fixed CFL">fixed_cfl</Value>
                 <Value Enum="Fixed time step">fixed_dt</Value>
               </DiscreteInfo>
             </String>
-            <Double Name="thetaa" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Time weight for advective terms"/>
+            <Double Name="thetaa" Label="Time weight for advective terms" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <BriefDescription>Value of 0 indicates explicit advection and value of 1 indicates implicit</BriefDescription>
               <DefaultValue>0.5</DefaultValue>
               <RangeInfo>
@@ -890,8 +910,7 @@
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
-            <Double Name="thetaK" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Time weight for advective terms"/>
+            <Double Name="thetaK" Label="Time weight for advective terms" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <BriefDescription>Value of 0 indicates explicit advection and value of 1 indicates implicit</BriefDescription>
               <DefaultValue>0.5</DefaultValue>
               <RangeInfo>
@@ -899,8 +918,7 @@
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
-            <Double Name="thetafF" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <Labels CommonLabel="Time weight for source terms"/>
+            <Double Name="thetafF" Label="Time weight for source terms" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <BriefDescription>Value of 0 indicates explicit treatment and value of 1 indicates implicit</BriefDescription>
               <DefaultValue>0.5</DefaultValue>
               <RangeInfo>
@@ -915,60 +933,54 @@
 
     <!--*** Turbulence models ***-->
     <AttDef Type="Turbulence model" BaseType="" Abstract="1" Version="0"/>
-    <AttDef Type="RNG k-e" BaseType="Turbulence model" Abstract="0" Version="0">
+    <AttDef Type="RNG k-e" Label="RNG k-e" BaseType="Turbulence model" Abstract="0" Version="0">
       <ItemDefinitions>
         <Void Name="timescale_limiter" Label="Time scale limiter" Version="0" AdvanceLevel="1" Optional="true" IsEnabledByDefault="false" NumberOfRequiredValues="0">
           <Categories>
-             <Cat>Incompressible Navier-Stokes</Cat>
+            <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Void>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="Smagorinsky" BaseType="Turbulence model" Abstract="0" Version="0">
+    <AttDef Type="Smagorinsky" Label="Smagorinsky" BaseType="Turbulence model" Abstract="0" Version="0">
       <ItemDefinitions>
-        <Double Name="c_s" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Constant"/>
+        <Double Name="c_s" Label="Constant" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
           <BriefDescription>Smagorinsky model constant.</BriefDescription>
           <DefaultValue>0.18</DefaultValue>
           <Categories>
-             <Cat>Incompressible Navier-Stokes</Cat>
+            <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="prandtl" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Turbulent Prandtl number"/>
+        <Double Name="prandtl" Label="Turbulent Prandtl number" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
           <DefaultValue>0.889</DefaultValue>
           <Categories>
-             <Cat>Incompressible Navier-Stokes</Cat>
+            <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="schmidt" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Turbulent Schmidt number"/>
+        <Double Name="schmidt" Label="Turbulent Schmidt number" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
           <DefaultValue>1.0</DefaultValue>
           <Categories>
-             <Cat>Incompressible Navier-Stokes</Cat>
+            <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="WALE" BaseType="Turbulence model" Abstract="0" Version="0">
+    <AttDef Type="WALE" Label="WALE" BaseType="Turbulence model" Abstract="0" Version="0">
       <ItemDefinitions>
-        <Double Name="c_w" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Constant"/>
+        <Double Name="c_w" Label="Constant" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
           <BriefDescription>WALE model constant.</BriefDescription>
           <DefaultValue>0.18</DefaultValue>
           <Categories>
-             <Cat>Incompressible Navier-Stokes</Cat>
+            <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="prandtl" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Turbulent Prandtl number"/>
+        <Double Name="prandtl" Label="Turbulent Prandtl number" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
           <DefaultValue>0.889</DefaultValue>
           <Categories>
-             <Cat>Incompressible Navier-Stokes</Cat>
+            <Cat>Incompressible Navier-Stokes</Cat>
           </Categories>
         </Double>
-        <Double Name="schmidt" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-          <Labels CommonLabel="Turbulent Schmidt number"/>
+        <Double Name="schmidt" Label="Turbulent Schmidt number" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
           <DefaultValue>1.0</DefaultValue>
           <Categories>
             <Cat>Incompressible Navier-Stokes</Cat>
@@ -983,9 +995,9 @@
     <!--    <AttDef Type="SimExpression" Abstract="1" Association="None"/> -->
     <AttDef Type="SimExpression" Abstract="1"/>
     <AttDef Type="SimInterpolation" BaseType="SimExpression" Abstract="1"/>
-    <AttDef Type="PolyLinearFunction" BaseType="SimInterpolation" Version="0" Unique="true" Associations="">
+    <AttDef Type="PolyLinearFunction" Label="Expression" BaseType="SimInterpolation" Version="0" Unique="true" Associations="">
       <ItemDefinitions>
-        <Group Name="ValuePairs" NumberOfRequiredGroups="1">
+        <Group Name="ValuePairs" Label="Value Pairs" NumberOfRequiredGroups="1">
           <ItemDefinitions>
             <Double Name="X" Version="0" AdvanceLevel="0" NumberOfRequiredValues="0"/>
             <Double Name="Value" Version="0" AdvanceLevel="0" NumberOfRequiredValues="0"/>
@@ -1040,10 +1052,10 @@
 
     <InstancedView Title="Problem Definition">
       <InstancedAttributes>
+        <Att Type="simulationtime">Simulation Time</Att>
         <Att Type="solution_method">Solution Method</Att>
         <Att Type="time_integration">Time Integration</Att>
         <!-- acbauer - put turbulence stuff here when ready -->
-        <Att Type="ProblemDefinition">Time Dependence</Att>
         <Att Type="hydrostat">Hydrostatic Pressure</Att>
         <Att Type="InitialConditions">Initial Conditions</Att>
       </InstancedAttributes>
@@ -1064,15 +1076,19 @@
       </AttributeTypes>
     </AttributeView>
 
-    <AttributeView Title="Temporal Statistics">
-      <!-- TempStatVarStatistics isn't appearing in the GUI -->
-      <InstancedAttributes>
-        <Att Type="TempStatVarStatistics">Parameters</Att> <!-- acbauer - this isn't showing in gui - fix this -->
-      </InstancedAttributes>
-      <AttributeTypes>
-        <Type>TempStatVarOutput</Type>
-      </AttributeTypes>
-    </AttributeView>
+    <!-- acbauer - want to change this from a tabbed view to a tiled view -->
+    <GroupView Title="Group Temporal Statistics">
+      <InstancedView Title="Plot Window Parameters">
+        <InstancedAttributes>
+          <Att Type="TempStatVarStatistics">Parameters</Att>
+        </InstancedAttributes>
+      </InstancedView>
+      <AttributeView Title="Variables">
+        <AttributeTypes>
+          <Type>TempStatVarOutput</Type>
+        </AttributeTypes>
+      </AttributeView>
+    </GroupView>
 
     <AttributeView Title="Boundary Conditions" ModelEntityFilter="f">
       <AttributeTypes>
