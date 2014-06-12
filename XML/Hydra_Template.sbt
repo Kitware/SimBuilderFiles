@@ -722,7 +722,7 @@
             <Value Enum="helicity">helicity</Value>
             <Value Enum="pressure">pressure</Value>
             <Value Enum="temp">temp</Value>
-            <Value Enum="trubeps">trubeps</Value>
+            <Value Enum="turbeps">turbeps</Value>
             <Value Enum="turbke">turbke</Value>
             <Value Enum="turbnu">turbnu</Value>
             <Value Enum="vel">vel</Value>
@@ -796,6 +796,7 @@
             <Value Enum="turbnu">turbnu</Value>
             <Value Enum="vel">vel</Value>
             <Value Enum="vginv2">vginv2</Value>
+            <Value Enum="volume">volume</Value>
             <Value Enum="vorticity">vorticity</Value>
             <Value Enum="ystar">ystar</Value>
           </DiscreteInfo>
@@ -822,9 +823,9 @@
       </ItemDefinitions>
     </AttDef>
 
-    <!--*** Temporal statistics options ***-->
+    <!--*** Temporal statistics options - these are output in the plotstatvar section ***-->
     <AttDef Type="TempStatVarOutput" BaseType="" Abstract="1" Version="0" Unique="false"/>
-    <AttDef Type="NodeTempStatVarOutput" Label="NodeTempStatVarOutput" BaseType="TempStatVarOutput" Abstract="0" Version="0" Unique="false">
+    <AttDef Type="NodeTempStatVarOutput" Label="Node plotstatvar" BaseType="TempStatVarOutput" Abstract="0" Version="0" Unique="false">
       <ItemDefinitions>
         <String Name="varname" Label="Variable Name" Version="0" NumberOfRequiredValues="1" >
           <DiscreteInfo>
@@ -847,7 +848,7 @@
         </String>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="ElemTempStatVarOutput" Label="ElemTempStatVarOutput" BaseType="TempStatVarOutput" Abstract="0" Version="0" Unique="false">
+    <AttDef Type="ElemTempStatVarOutput" Label="Elem plotstatvar" BaseType="TempStatVarOutput" Abstract="0" Version="0" Unique="false">
       <ItemDefinitions>
         <String Name="varname" Label="Variable Name" Version="0" NumberOfRequiredValues="1" >
           <DiscreteInfo>
@@ -871,7 +872,7 @@
         </String>
       </ItemDefinitions>
     </AttDef>
-    <AttDef Type="SideSetTempStatVarOutput" Label="SideSetTempStatVarOutput" BaseType="TempStatVarOutput" Abstract="0" Version="0" Unique="false" Associations="f">
+    <AttDef Type="SideSetTempStatVarOutput" Label="SideSet plotstatvar" BaseType="TempStatVarOutput" Abstract="0" Version="0" Unique="false" Associations="f">
       <ItemDefinitions>
         <String Name="varname" Label="Variable Name" Version="0" NumberOfRequiredValues="1" >
           <DiscreteInfo>
@@ -933,8 +934,8 @@
                       <BriefDescription>(ppesolver::hypre_coarsen_type)</BriefDescription>
                       <DiscreteInfo DefaultIndex="3">
                         <Value Enum="Cleary-Luby-Jones-Plassman">CLJP</Value>
-                        <Value Enum="classical Ruge-Steuben on each processor, no boundary treatment">RUGE STEUBEN</Value>
-                        <Value Enum="classical Ruge-Steuben on each processor, followed by a third pass">MODIFIED RUGE STEUBEN</Value>
+                        <Value Enum="Classical Ruge-Steuben on each processor, no boundary treatment">RUGE STEUBEN</Value>
+                        <Value Enum="Classical Ruge-Steuben on each processor, followed by a third pass">MODIFIED RUGE STEUBEN</Value>
                         <Value Enum="Falgout coarsening">FALGOUT</Value>
                         <Value Enum="PMIS-coarsening">PMIS</Value>
                         <Value Enum="HMIS-coarsening">HMIS</Value>
@@ -1059,6 +1060,14 @@
                       <BriefDescription>(ppesolver::pre_smooth)</BriefDescription>
                       <DefaultValue>1</DefaultValue>
                     </Int>
+                    <Int Name="post_smooth" Label="Number of Postsmoothing Sweeps" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1"  >
+                      <BriefDescription>(ppesolver::post_smooth)</BriefDescription>
+                      <DefaultValue>1</DefaultValue>
+                    </Int>
+                    <Int Name="coarse_size" Label="Minimum size of coarsest problem in AMG preconditioner" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1"  >
+                      <BriefDescription>(ppesolver::coarse_size)</BriefDescription>
+                      <DefaultValue>500</DefaultValue>
+                    </Int>
                     <Int Name="levels" Label="Maximum Number of AMG Levels" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1"  >
                       <BriefDescription>(ppesolver::levels)</BriefDescription>
                       <DefaultValue>20</DefaultValue>
@@ -1066,12 +1075,14 @@
                   </ChildrenDefinitions>
                   <DiscreteInfo DefaultIndex="0">
                     <Structure>
-                      <Value Enum="Multilevel Preconditioner">ml</Value>
+                      <Value Enum="Multilevel Preconditioner (ML)">ml</Value>
                       <Items>
                         <Item>smoother</Item>
                         <Item>cycle</Item>
                         <Item>solver</Item>
                         <Item>pre_smooth</Item>
+                        <Item>post_smooth</Item>
+                        <Item>coarse_size</Item>
                         <Item>levels</Item>
                       </Items>
                     </Structure>
@@ -1281,22 +1292,37 @@
           <ItemDefinitions>
             <String Name="strategy" Label="Strategy" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <BriefDescription>solution_method::strategy</BriefDescription>
+              <ChildrenDefinitions>
+                <Int Name="nvec" Label="NVec" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
+                  <BriefDescription>Maximum number of vectors used for non-linear Krylov acceleration (solution_method::nvec).</BriefDescription>
+                  <DefaultValue>0</DefaultValue>
+                </Int>
+                <String Name="error_norm" Label="Non-linear convergence norm" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
+                  <BriefDescription>(solution_method::error_norm).</BriefDescription>
+                  <DiscreteInfo DefaultIndex="0">
+                    <Value Enum="Composite RMS">composite</Value>
+                    <Value Enum="Max">max</Value>
+                    <Value Enum="Weight">weight</Value>
+                    <Value Enum="Residual">residual</Value>
+                  </DiscreteInfo>
+                </String>
+              </ChildrenDefinitions>
               <DiscreteInfo DefaultIndex="0">
                 <Value Enum="Projection">projection</Value>
-                <Value Enum="Picard">picard</Value>
+                <Structure>
+                  <Value Enum="Picard">picard</Value>
+                  <Items>
+                    <Item>error_norm</Item>
+                  </Items>
+                </Structure>
+                <Structure>
+                  <Value Enum="Newton Krylov">newtonkrylov</Value>
+                  <Items>
+                    <Item>nvec</Item>
+                  </Items>
+                </Structure>
               </DiscreteInfo>
             </String>
-            <String Name="pressure_update" Label="Pressure Update" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
-              <BriefDescription>solution_method::pressure_update</BriefDescription>
-              <DiscreteInfo DefaultIndex="1">
-                <Value Enum="Chorin">chorin</Value>
-                <Value Enum="Gradient">gradient</Value>
-                <Value Enum="Curvature">curvature</Value>
-              </DiscreteInfo>
-            </String>
-            <Void Name="curlfree_fix" Label="Curl Free Fix (Picard only)" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
-              <BriefDescription>Enable/disable the diagnostic information from the solver (solution_method::curlfree_fix)</BriefDescription>
-            </Void>
             <Int Name="itmax" Label="Maximum number of iterations" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <BriefDescription>The maximum number of non-linear iterations to be taken during each time step (solution_method::itmax)</BriefDescription>
               <DefaultValue>5</DefaultValue>
@@ -1328,6 +1354,12 @@
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
+            <Void Name="subcycle" Label="Sub-cycle" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
+              <BriefDescription>(solution_method::subcycle)</BriefDescription>
+            </Void>
+            <Void Name="timestep_control" Label="Activate time step control" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
+              <BriefDescription>(solution_method::timestep_control)</BriefDescription>
+            </Void>
             <Void Name="convergence" Label="Convergence" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
               <BriefDescription>Enable/disable writing information about the non-linear convergence history to the conv file when using the Picard solution method (solution_method::convergence)</BriefDescription>
             </Void>
@@ -1420,7 +1452,7 @@
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
-            <Double Name="thetaK" Label="Time weight for advective terms" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
+            <Double Name="thetaK" Label="Time weight for viscous/diffusive terms" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1">
               <BriefDescription>Value of 0 indicates explicit advection and value of 1 indicates implicit (time_integration::thetak)</BriefDescription>
               <DefaultValue>0.5</DefaultValue>
               <RangeInfo>
@@ -1553,8 +1585,8 @@
 
   <!--********** Workflow Views ***********-->
   <RootView Title="SimBuilder">
-    <DefaultColor R="1" G="1" B="0.5" />
-    <InvalidColor R="1" G="0.5" B="0.5" />
+    <DefaultColor>1., 1., 0.5, 1.</DefaultColor>
+    <InvalidColor>1, 0.5, 0.5, 1</InvalidColor>
     <AdvancedFontEffects Bold="0" Italic="1" />
 
     <AttributeView Title="Materials" ModelEntityFilter="r">
