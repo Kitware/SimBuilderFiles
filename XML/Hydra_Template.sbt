@@ -1302,8 +1302,10 @@
                   <DiscreteInfo DefaultIndex="0">
                     <Value Enum="Composite RMS">composite</Value>
                     <Value Enum="Max">max</Value>
+                    <!-- Will eventually put 'weight' and 'residual' in but not quite ready yet
                     <Value Enum="Weight">weight</Value>
                     <Value Enum="Residual">residual</Value>
+                    -->
                   </DiscreteInfo>
                 </String>
               </ChildrenDefinitions>
@@ -1313,11 +1315,6 @@
                   <Value Enum="Picard">picard</Value>
                   <Items>
                     <Item>error_norm</Item>
-                  </Items>
-                </Structure>
-                <Structure>
-                  <Value Enum="Newton Krylov">newtonkrylov</Value>
-                  <Items>
                     <Item>nvec</Item>
                   </Items>
                 </Structure>
@@ -1354,8 +1351,8 @@
                 <Max Inclusive="true">1.0</Max>
               </RangeInfo>
             </Double>
-            <Void Name="subcycle" Label="Sub-cycle" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
-              <BriefDescription>(solution_method::subcycle)</BriefDescription>
+            <Void Name="subcycle" Label="Subcycle the pressure solves" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
+              <BriefDescription>Ignore pressure up-dates if the pressure variable has already converged (solution_method::subcycle)</BriefDescription>
             </Void>
             <Void Name="timestep_control" Label="Activate time step control" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
               <BriefDescription>(solution_method::timestep_control)</BriefDescription>
