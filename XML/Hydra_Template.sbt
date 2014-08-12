@@ -620,6 +620,13 @@
 
     <AttDef Type="Output" BaseType="" Abstract="0" Version="0" Unique="false" Associations="">
       <ItemDefinitions>
+        <String Name="type" Label="Output Type" Version="0" NumberOfRequiredValues="1">
+          <BriefDescription>Output format for restart and field files (filetype)</BriefDescription>
+          <DiscreteInfo DefaultIndex="0">
+            <Value Enum="Serial">serial</Value>
+            <Value Enum="Distributed">distributed</Value>
+          </DiscreteInfo>
+        </String>
         <Group Name="RestartOutput" Label="Restart Output" NumberOfRequiredGroups="1">
           <ItemDefinitions>
             <Int Name="frequency" Label="Frequency" Version="0" NumberOfRequiredValues="1">
@@ -629,13 +636,6 @@
               </RangeInfo>
               <DefaultValue>0</DefaultValue>
             </Int>
-            <String Name="type" Label="Type" Version="0" NumberOfRequiredValues="1">
-              <BriefDescription>Output dump format (filetype)</BriefDescription>
-              <DiscreteInfo DefaultIndex="0">
-                <Value Enum="Serial">serial</Value>
-                <Value Enum="Distributed">distributed</Value>
-              </DiscreteInfo>
-            </String>
           </ItemDefinitions>
         </Group>
         <Group Name="FieldOutput" Label="Field Output" NumberOfRequiredGroups="1">
@@ -1545,10 +1545,10 @@
                 <Value Enum="Smagorinsky">smagorinsky</Value>
                 <Value Enum="Wall-Adapted Large Eddy">wale</Value>
                 <Value Enum="RNG k-e">rng_ke</Value>
+                <Value Enum="SST k-w (under development)">sst_kw</Value>
+                <Value Enum="Ksgs (under development)">ksgs</Value>
+                <Value Enum="LDKM ksgs (under development)">ldkm_ksgs</Value>
             -->
-            <Value Enum="SST k-w (under development)">sst_kw</Value>
-            <Value Enum="K^sgs (under development)">ksgs</Value>
-            <Value Enum="LDKM k^sgs (under development)">ldkm_ksgs</Value>
           </DiscreteInfo>
         </String>
       </ItemDefinitions>

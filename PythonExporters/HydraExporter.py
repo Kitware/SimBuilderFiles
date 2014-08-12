@@ -122,12 +122,12 @@ format_table = {
         fmt('Load Balance Diagnostics', 'diagnostics')
     ],
     'Output': [
+        fmt('type', 'filetype'),
         groupfmt('FieldOutput', [
             fmt('type', 'pltype'),
             fmt('frequency', 'plti')
         ]),
         groupfmt('RestartOutput', [
-            fmt('type', 'filetype'),
             fmt('frequency', 'dump')
         ])
     ],
@@ -321,7 +321,8 @@ def write_output_section(manager, categories, out):
     # of Item name, because format_table[] is set up that way
     # TODO Redo format table to put Item name first?
     write_item(manager, categories, out, 'Output', 'FieldOutput', 'type')  # pltype
-    write_item(manager, categories, out, 'Output', 'RestartOutput', 'type')  # filetype
+    #write_item(manager, categories, out, 'Output', 'RestartOutput', 'type')  # filetype
+    write_item(manager, categories, out, 'Output', 'type')  # filetype
     write_item(manager, categories, out, 'Output', 'FieldOutput', 'frequency')  # plti
     write_item(manager, categories, out, 'StatusInformation', 'minmaxfrequency')  # ttyi
     write_item(manager, categories, out, 'StatusInformation', 'PrintLevel')  # prtlev
