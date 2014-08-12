@@ -1634,7 +1634,7 @@
       </AttributeTypes>
     </AttributeView>
 
-    <GroupView Title="Group Temporal Statistics" Style="Tiled">
+    <GroupView Title="Statistics" Style="Tiled">
       <InstancedView Title="Plot Window Parameters">
         <InstancedAttributes>
           <Att Type="TempStatVarStatistics">Parameters</Att>
