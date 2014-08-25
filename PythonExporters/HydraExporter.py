@@ -62,6 +62,7 @@ section_table = [
     custom_section('plotstatvar'),
     #ss('InitialConditions', 'initial', 'InitialConditions', comment='Simple IC\'s'),
     custom_section('InitialConditions'),
+    custom_section('BodyForce'),
     bc('distancebc', 'distance'),
     bc('Pressure', 'pressure'),
     #custom_section('distance'),  # Wall and Penetration att types
@@ -682,6 +683,46 @@ def write_initial_conditions_section(manager, categories, out):
     out.write('  end\n')
     return True
 
+def write_body_force_section(manager, categories, out):
+    '''
+    Write the body_force, boussinesqforce and porous_drag section
+    of the cntl file.
+    '''
+    att_types = ['GravityForce', 'BoussinesqForce', 'porous_drag', 'HeatSource']
+    att_keywords = {'GravityForce' : ['fx', 'fy', 'fz'],
+                     'BoussinesqForce' : ['gx', 'gy', 'gz'],
+                     'porous_drag' : ['amp'], 'HeatSource' : ['Q'] }
+    for att_type in att_types:
+        att_list = manager.findAttributes(att_type)
+        number_of_associated = 0
+        for att in att_list:
+            if att.numberOfAssociatedEntities() > 0:
+                number_of_associated += 1
+
+        if len(att_list) > number_of_associated+1:
+            print 'WARNING: more than one unassociated %s attribute' % att_type
+
+        attributed_entities = list()
+        for att in att_list:
+            associations = att.associatedEntitiesSet()
+            for association in associations:
+                out.write('\n')
+                out.write('  %s\n' %att_type)
+                out.write('    set %s\n' % get_id_from_name(association.name()))
+                item = att.find(att_type)
+                if item.isEnabled():
+                    double_item = smtk.attribute.to_concrete(item)
+                    expression_ref = double_item.expressionReference()
+                    load_curve = -1 # TODO, need to figure out id
+                    out.write('    lcid %d\n' % load_curve)
+                keywords = att_keywords[att_type]
+                item = att.find('Scale')
+                double_item = smtk.attribute.to_concrete(item)
+                for i, keyword in enumerate(keywords):
+                    value = double_item.value(i)
+                    out.write('    %s %f\n' % (keyword, value))
+                out.write('  end\n')
+
 
 def write_item(manager, categories, out, attribute_type, *item_names):
     '''
@@ -758,7 +799,8 @@ def write_section(manager, section_config, categories, out):
             'turbulence': write_turbulence_section,
             'histvar':  write_histvar_section,
             'velocity': write_velocity_section,
-            'InitialConditions': write_initial_conditions_section
+            'InitialConditions': write_initial_conditions_section,
+            'BodyForce': write_body_force_section
         }
         f = custom_dict.get(section_config.section_name)
         if f:
