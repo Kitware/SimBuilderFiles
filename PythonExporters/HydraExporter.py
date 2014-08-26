@@ -305,6 +305,12 @@ def get_id_from_name(name):
     in the string is the proper id to be used. This will be
     replaced with GridInfo when we have time to do it properly.
     '''
+    # Domain sets are named DomainSetX
+    domainset_prefix = 'DomainSet'
+    if name.startswith(domainset_prefix):
+        l = len(domainset_prefix)
+        return name[l:]
+
     tokens = name.split()
     if tokens: # checks if tokens is empty
         return tokens[-1]
@@ -699,18 +705,23 @@ def write_body_force_section(manager, categories, out):
         # Traverse once to find any unassociated attributes
         # These become "default" value for domain sets
         # Also populate model_domains set if needed
-        unassociated_atts = set()
+        unassociated_att = None
         for att in att_list:
-            if 0 == att.numberOfAssociatedEntities:
-                unassociated_atts.add(att)
+            if 0 == att.numberOfAssociatedEntities():
+                if unassociated_att is None:
+                    unassociated_att = att
+                else:
+                    msg = 'WARNING: more than one unassociated %s attribute.' % \
+                        att_type
+                    msg += ' Using \"%s\" and ignoring \"%s\"' % \
+                        (unassociated_att.name(), att.name())
+                    print msg
             elif model is None:
+                # Retrieve set of all model domain sets
                 entities = att.associatedEntitiesSet()
                 model = entities.pop().model()
                 #print 'Retrieved model'
                 domain_sets = get_domain_sets(model)
-
-        if len(unassociated_atts) > 1:
-            print 'WARNING: more than one unassociated %s attribute' % att_type
 
         # Traverse again to actually write the output.
         # Keep track of which domains get output.
@@ -721,8 +732,8 @@ def write_body_force_section(manager, categories, out):
                 unused_domain_sets.discard(entity)
                 write_body_force(att, entity, out)
 
-        # Write default values for unassociated domains
-        for att in unassociated_atts:
+        # Write default values for unassociated domain sets
+        if unassociated_att is not None:
             for entity in unused_domain_sets:
                 write_body_force(att, entity, out)
 
@@ -731,6 +742,7 @@ def write_body_force(att, entity, out):
     '''Writes body force for one attribute-entity pair.
 
     '''
+    #print 'Writing', att.type(), 'for', entity.name()
     att_keywords = {'GravityForce' : ['fx', 'fy', 'fz'],
                      'BoussinesqForce' : ['gx', 'gy', 'gz'],
                      'porous_drag' : ['amp'], 'HeatSource' : ['Q'] }
