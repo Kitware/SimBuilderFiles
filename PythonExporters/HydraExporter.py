@@ -725,7 +725,9 @@ def write_body_force_section(manager, categories, out):
 
         # Traverse again to actually write the output.
         # Keep track of which domains get output.
-        unused_domain_sets = set(domain_sets)
+        unused_domain_sets = set()
+        if domain_sets is not None:
+            unused_domain_sets = set(domain_sets)
         for att in att_list:
             entities = att.associatedEntitiesSet()
             for entity in entities:
@@ -734,8 +736,15 @@ def write_body_force_section(manager, categories, out):
 
         # Write default values for unassociated domain sets
         if unassociated_att is not None:
-            for entity in unused_domain_sets:
-                write_body_force(att, entity, out)
+            if domain_sets is None:
+                msg = 'WARNING: Cannot write body force %s for unassociated attribute %s.' % \
+                    (unassociated_att.type(), unassociated_att.name())
+                msg = ' This version of software only supports body force' + \
+                    ' attributes that are associated to one or more model entities.'
+                print msg
+            else:
+                for entity in unused_domain_sets:
+                    write_body_force(att, entity, out)
 
 
 def write_body_force(att, entity, out):
@@ -1004,7 +1013,14 @@ def get_domain_sets(model):
     '''Returns frozenset of model items that are domain sets.
 
     Current logic presumes that all groups with regions are domain sets.
+    This function uses smtk.model.GroupItem.CastTo(), which is not
+    implemented on smtk:master as of August 2014. If this method is not
+    available, this function returns None for its output.
     '''
+    # Confirm that smtk can generate the set
+    if not hasattr(smtk.model.GroupItem, 'CastTo'):
+        return None
+
     domain_sets = set()
     item_map = model.itemMap()
     #print 'item_map', item_map
