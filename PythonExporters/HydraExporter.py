@@ -689,39 +689,70 @@ def write_body_force_section(manager, categories, out):
     of the cntl file.
     '''
     att_types = ['GravityForce', 'BoussinesqForce', 'porous_drag', 'HeatSource']
+    model = None  # if needed for un-associated attributes
+    domain_sets = None  # ditto (only created if needed)
+    for att_type in att_types:
+        att_list = manager.findAttributes(att_type)
+        if not att_list:
+            continue
+
+        # Traverse once to find any unassociated attributes
+        # These become "default" value for domain sets
+        # Also populate model_domains set if needed
+        unassociated_atts = set()
+        for att in att_list:
+            if 0 == att.numberOfAssociatedEntities:
+                unassociated_atts.add(att)
+            elif model is None:
+                entities = att.associatedEntitiesSet()
+                model = entities.pop().model()
+                #print 'Retrieved model'
+                domain_sets = get_domain_sets(model)
+
+        if len(unassociated_atts) > 1:
+            print 'WARNING: more than one unassociated %s attribute' % att_type
+
+        # Traverse again to actually write the output.
+        # Keep track of which domains get output.
+        unused_domain_sets = set(domain_sets)
+        for att in att_list:
+            entities = att.associatedEntitiesSet()
+            for entity in entities:
+                unused_domain_sets.discard(entity)
+                write_body_force(att, entity, out)
+
+        # Write default values for unassociated domains
+        for att in unassociated_atts:
+            for entity in unused_domain_sets:
+                write_body_force(att, entity, out)
+
+
+def write_body_force(att, entity, out):
+    '''Writes body force for one attribute-entity pair.
+
+    '''
     att_keywords = {'GravityForce' : ['fx', 'fy', 'fz'],
                      'BoussinesqForce' : ['gx', 'gy', 'gz'],
                      'porous_drag' : ['amp'], 'HeatSource' : ['Q'] }
-    for att_type in att_types:
-        att_list = manager.findAttributes(att_type)
-        number_of_associated = 0
-        for att in att_list:
-            if att.numberOfAssociatedEntities() > 0:
-                number_of_associated += 1
+    att_type = att.type()
+    out.write('\n')
+    out.write('  %s\n' % att_type)
+    out.write('    set %s\n' % get_id_from_name(entity.name()))
+    # Load curve item has same name as attribute (our policy)
+    item = att.find(att_type)
+    if item.isEnabled():
+        double_item = smtk.attribute.to_concrete(item)
+        expression_ref = double_item.expressionReference()
+        load_curve = -1 # TODO, need to figure out id
+        out.write('    lcid %d\n' % load_curve)
+    keywords = att_keywords[att_type]
+    item = att.find('Scale')
+    double_item = smtk.attribute.to_concrete(item)
+    for i, keyword in enumerate(keywords):
+        value = double_item.value(i)
+        out.write('    %s %f\n' % (keyword, value))
+    out.write('  end\n')
 
-        if len(att_list) > number_of_associated+1:
-            print 'WARNING: more than one unassociated %s attribute' % att_type
-
-        attributed_entities = list()
-        for att in att_list:
-            associations = att.associatedEntitiesSet()
-            for association in associations:
-                out.write('\n')
-                out.write('  %s\n' %att_type)
-                out.write('    set %s\n' % get_id_from_name(association.name()))
-                item = att.find(att_type)
-                if item.isEnabled():
-                    double_item = smtk.attribute.to_concrete(item)
-                    expression_ref = double_item.expressionReference()
-                    load_curve = -1 # TODO, need to figure out id
-                    out.write('    lcid %d\n' % load_curve)
-                keywords = att_keywords[att_type]
-                item = att.find('Scale')
-                double_item = smtk.attribute.to_concrete(item)
-                for i, keyword in enumerate(keywords):
-                    value = double_item.value(i)
-                    out.write('    %s %f\n' % (keyword, value))
-                out.write('  end\n')
 
 
 def write_item(manager, categories, out, attribute_type, *item_names):
@@ -955,3 +986,24 @@ def find_item_config(attribute_type, *item_names):
             config_list = matching_config.item_format_list
 
     return matching_config
+
+
+def get_domain_sets(model):
+    '''Returns frozenset of model items that are domain sets.
+
+    Current logic presumes that all groups with regions are domain sets.
+    '''
+    domain_sets = set()
+    item_map = model.itemMap()
+    #print 'item_map', item_map
+    for model_item in item_map.values():
+        #print 'model_item', model_item.type(), model_item.name()
+        if (smtk.model.Item.Type.GROUP == model_item.type()):
+            model_group_item = smtk.model.GroupItem.CastTo(model_item)
+            #print 'model_group_item %s 0x%x' % (model_group_item.name(), model_group_item.entityMask())
+            mask = model_group_item.entityMask()
+            volume_mask = 0x8
+            if volume_mask == (mask & volume_mask):
+                #print 'domainset: %s %d' % (model_group_item.name(), model_group_item.id())
+                domain_sets.add(model_item)
+    return frozenset(domain_sets)
