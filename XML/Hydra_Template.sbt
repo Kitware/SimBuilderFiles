@@ -259,7 +259,7 @@
     </AttDef>
     <AttDef Type="HeatSource" Label="Heat Source" BaseType="BodyForce" Version="0" Unique="true" Associations="r">
       <ItemDefinitions>
-        <Double Name="Heat Source" Label="Load Curve" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
+        <Double Name="HeatSource" Label="Load Curve" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
           <BriefDescription>(heat_source::lcid)</BriefDescription>
           <ExpressionType>PolyLinearFunction</ExpressionType>
           <Categories>
