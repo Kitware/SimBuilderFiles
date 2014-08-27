@@ -206,6 +206,10 @@ format_table = {
     ],
 }
 
+# Instantiate global dicationary for load curve functions
+lcid_dictionary = dict()
+
+
 # Entry point (main export function)
 def ExportCMB(spec):
     '''
@@ -761,11 +765,11 @@ def write_body_force(att, entity, out):
     out.write('    set %s\n' % get_id_from_name(entity.name()))
     # Load curve item has same name as attribute (our policy)
     item = att.find(att_type)
-    if item.isEnabled():
-        double_item = smtk.attribute.to_concrete(item)
-        expression_ref = double_item.expressionReference()
-        load_curve = -1 # TODO, need to figure out id
-        out.write('    lcid %d\n' % load_curve)
+    loadcurve_id = get_loadcurve_id(item)
+    if loadcurve_id is not None:
+        out.write('    lcid %d\n' % loadcurve_id)
+
+    # Value is 'Scale' item
     keywords = att_keywords[att_type]
     item = att.find('Scale')
     double_item = smtk.attribute.to_concrete(item)
@@ -1035,3 +1039,35 @@ def get_domain_sets(model):
                 #print 'domainset: %s %d' % (model_group_item.name(), model_group_item.id())
                 domain_sets.add(model_item)
     return frozenset(domain_sets)
+
+
+def get_loadcurve_id(item):
+    '''Returns load curve id for smtk.attribute.DoubleItem
+
+    Uses global lcid_dictionary.
+    '''
+    if item is None or not item.isEnabled():
+        return None
+
+    double_item = smtk.attribute.to_concrete(item)
+    if double_item is None:
+        print 'ERROR: %s item is not DoubleItem' % item.name()
+        return None
+
+    if not double_item.isExpression(0):
+        print 'WARNING: %s item is not expression' % item.name()
+        return None
+    if not double_item.isSet(0):
+        return None
+
+    exp_ref = double_item.expressionReference(0)
+    exp_att = exp_ref.value(0)
+    name = exp_att.name()
+
+    global lcid_dictionary
+    lcid = lcid_dictionary.get(name)
+    if lcid is None:
+        lcid = len(lcid_dictionary) + 1
+        print 'Assign lcid %d to function \"%s\"' % (lcid, name)
+        lcid_dictionary[name] = lcid
+    return lcid
