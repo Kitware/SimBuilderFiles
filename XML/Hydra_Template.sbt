@@ -1562,8 +1562,8 @@
       <ItemDefinitions>
         <Group Name="ValuePairs" Label="Value Pairs" NumberOfRequiredGroups="1">
           <ItemDefinitions>
-            <Double Name="X" Version="0" AdvanceLevel="0" NumberOfRequiredValues="0"/>
-            <Double Name="Value" Version="0" AdvanceLevel="0" NumberOfRequiredValues="0"/>
+            <Double Name="X" Version="0" AdvanceLevel="0" Extensible="true" NumberOfRequiredValues="0"/>
+            <Double Name="Value" Version="0" AdvanceLevel="0" Extensible="true" NumberOfRequiredValues="0"/>
           </ItemDefinitions>
         </Group>
         <!-- acbauer check on name here -->

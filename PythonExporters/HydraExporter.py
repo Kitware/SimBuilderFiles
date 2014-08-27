@@ -294,6 +294,9 @@ def ExportCMB(spec):
         for section_config in section_table:
             ok = write_section(manager, section_config, categories, out)
 
+        # Write load curves last, since ids are assigned when writing atts
+        write_load_curves(manager, out)
+
         out.write('\n')
         out.write('end\n')
         out.write('\n')
@@ -519,13 +522,17 @@ def write_bc_section(manager, section_config, categories, out):
         # TODO sort by sideset number (is this a UserData thing?)
         for ent in ent_set:
             sideset = get_id_from_name(ent.name())
-            load_curve = -1  # TODO
+
+            item = att.find('LoadCurve')
+            lcid = get_loadcurve_id(item)
+            if lcid is None:
+                lcid = -1
 
             # TODO use format table? Only for non-standard form
             item = att.find('Scale')
             scale_item = smtk.attribute.to_concrete(item)
             scale = get_item_value(scale_item)
-            out.write('    sideset %s %d %s\n' % (sideset, load_curve, scale))
+            out.write('    sideset %s %d %s\n' % (sideset, lcid, scale))
 
     out.write('  end\n')
     return True
@@ -557,12 +564,16 @@ def write_distance_section(manager, categories, out):
         # TODO sort by sideset number
         for ent in ent_set:
             sideset = get_id_from_name(ent.name())
-            load_curve = -1  # TODO get load curve number
+
+            item = att.find('LoadCurve')
+            lcid = get_loadcurve_id(item)
+            if lcid is None:
+                lcid = -1
 
             item = att.find('Scale')
             scale_item = smtk.attribute.to_concrete(item)
             scale = get_item_value(scale_item)
-            out.write('    sideset %s %d %s\n' % (sideset, load_curve, scale))
+            out.write('    sideset %s %d %s\n' % (sideset, lcid, scale))
 
     out.write('  end\n')
     return True
@@ -620,7 +631,12 @@ def write_vector_bc_section(manager, config, categories, out):
         ent_att_list = bc_dict.get(sideset)
         for att in ent_att_list:
             label = label_dict.get(att.type())
-            lcid = -1  # TODO load curve
+
+            item = att.find('LoadCurve')
+            lcid = get_loadcurve_id(item)
+            if lcid is None:
+                lcid = -1
+
             item = att.find('Scale')
             double_item = smtk.attribute.to_concrete(item)
             scale = get_item_value(double_item)
@@ -1071,3 +1087,29 @@ def get_loadcurve_id(item):
         print 'Assign lcid %d to function \"%s\"' % (lcid, name)
         lcid_dictionary[name] = lcid
     return lcid
+
+
+def write_load_curves(manager, out):
+    '''Writes all load curves in the lcid_dictionary.
+
+    '''
+    # Sort by id (dictionary value)
+    lc_tuples = sorted(lcid_dictionary.items(), key=lambda t:t[1])
+    for name, lcid in lc_tuples:
+        att = manager.findAttribute(name)
+        out.write('\n')
+        out.write('  # Load Curve \"%s\"\n' % name)
+        out.write('  load_curve\n')
+        out.write('    id %s\n' % lcid)
+
+        val_pairs_item = att.find('ValuePairs')
+        val_pairs_group = smtk.attribute.GroupItem.CastTo(val_pairs_item)
+        x_item = val_pairs_group.find('X')
+        x_item = smtk.attribute.DoubleItem.CastTo(x_item)
+        val_item = val_pairs_group.find('Value')
+        val_item = smtk.attribute.DoubleItem.CastTo(val_item)
+        num_vals = x_item.numberOfValues()
+        for i in range(num_vals):
+          out.write('      %.10e %.10e\n' % (x_item.value(i), val_item.value(i)))
+
+        out.write('  end\n')
