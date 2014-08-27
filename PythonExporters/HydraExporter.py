@@ -54,6 +54,7 @@ section_table = [
     ss('time_integration', 'time_integration', 'TimeIntegration'),
     ss('LoadBalancer', 'load_balance'),
     custom_section('output'),
+    ss('energy'),
     custom_section('turbulence'),
     ss('Material', 'material', comment='Material model setup & assignment to sets'),
     # TODO materialset, probably a custom_section (or part of a custom Material section)
@@ -92,6 +93,9 @@ format_table = {
         fmt('nsteps'),
         fmt('deltat'),
         fmt('term')
+    ],
+    'energy': [
+        fmt('energy')
     ],
     'solution_method': [
         fmt('strategy', 'strategy', [
@@ -266,7 +270,7 @@ def ExportCMB(spec):
 
     analysis_dict = {
         'Incompressible Navier-Stokes Analysis': 'cc_navierstokes',
-        'NS and Energy Equation Analysis': 'energy TBD'
+        'NS and Energy Equation Analysis': 'cc_navierstokes'
     }
     if analysis_type not in analysis_dict:
         print 'Unsupported analysis type \"%s\"" - no output generated' % \
