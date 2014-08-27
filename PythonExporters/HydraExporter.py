@@ -364,6 +364,10 @@ def write_turbulence_section(manager, categories, out):
         return False
 
     attribute = turb_att_list[0] # there should only be a single instance of this attribute
+
+    if not attribute.isMemberOf(categories):
+        return True
+
     item = attribute.find("Method")
     if item is None:
         return False
@@ -522,6 +526,9 @@ def write_bc_section(manager, section_config, categories, out):
     out.write('  %s\n' % section_config.title)
 
     for att in att_list:
+        if not att.isMemberOf(categories):
+            continue
+
         ent_set = att.associatedEntitiesSet()
         # TODO sort by sideset number (is this a UserData thing?)
         for ent in ent_set:
@@ -556,6 +563,9 @@ def write_distance_section(manager, categories, out):
 
     # Write walls first (no load curve, zero scale)
     for att in wlist:
+        if not att.isMemberOf(categories):
+            continue
+
         ent_set = att.associatedEntitiesSet()
         # TODO sort by sideset number
         for ent in ent_set:
@@ -608,6 +618,9 @@ def write_vector_bc_section(manager, config, categories, out):
     for att_type, label in config.attribute_types_labels:
         att_list = manager.findAttributes(att_type)
         for att in att_list:
+            if not att.isMemberOf(categories):
+                continue
+
             ent_set = att.associatedEntitiesSet()
             for ent in ent_set:
                 sideset = get_id_from_name(ent.name())
@@ -659,6 +672,9 @@ def write_initial_conditions_section(manager, categories, out):
     att_type = 'InitialConditions'
     att_list = manager.findAttributes(att_type)
     att = att_list[0]
+    if not att.isMemberOf(categories):
+        True
+
     item = att.find('InitialConditions')
     group_item = smtk.attribute.to_concrete(item)
 
@@ -688,7 +704,8 @@ def write_initial_conditions_section(manager, categories, out):
             #print 'WARNING: No %s item found' % item_config.name
             continue
 
-        # TODO Check item categories
+        if not item.isMemberOf(categories):
+            continue
 
         # Filter turbulence ICs based on turb_method
         if item_config.name == 'tke' and turb_method not in ['rng_ke', 'sst_kw']:
@@ -731,6 +748,9 @@ def write_body_force_section(manager, categories, out):
         # Also populate model_domains set if needed
         unassociated_att = None
         for att in att_list:
+            if not att.isMemberOf(categories):
+                continue
+
             if 0 == att.numberOfAssociatedEntities():
                 if unassociated_att is None:
                     unassociated_att = att
@@ -811,7 +831,9 @@ def write_item(manager, categories, out, attribute_type, *item_names):
         print 'Item %s:%s not found' % (attribute_type, '/'.join(item_names))
         return False
 
-    # TODO Check categories
+    # Check categories
+    if not item.isMemberOf(categories):
+        return
 
     item_config = find_item_config(attribute_type, *item_names)
     if item_config is None:
@@ -904,6 +926,11 @@ def write_section(manager, section_config, categories, out):
         print 'WARNING - Found %d attributes of type %s - using first one' % \
             (len(att_list), section_config.attribute_type)
     att = att_list[0]
+
+    # If not in categories, don't write the section
+    if not att.isMemberOf(categories):
+        return True
+
     parent = att
 
     if section_config.group_name is not None:
@@ -943,7 +970,9 @@ def write_section(manager, section_config, categories, out):
             print 'WARNING: No %s item found' % item_config.name
             continue
 
-        # TODO Check item categories
+        # Check item categories
+        if not att.isMemberOf(categories):
+            continue
 
         write_item_tree(item, item_config, format_string, out)
 
