@@ -54,6 +54,7 @@ section_table = [
     ss('time_integration', 'time_integration', 'TimeIntegration'),
     ss('LoadBalancer', 'load_balance'),
     custom_section('output'),
+    ss('energy'),
     custom_section('turbulence'),
     ss('Material', 'material', comment='Material model setup & assignment to sets'),
     # TODO materialset, probably a custom_section (or part of a custom Material section)
@@ -92,6 +93,9 @@ format_table = {
         fmt('nsteps'),
         fmt('deltat'),
         fmt('term')
+    ],
+    'energy': [
+        fmt('energy')
     ],
     'solution_method': [
         fmt('strategy', 'strategy', [
@@ -206,6 +210,10 @@ format_table = {
     ],
 }
 
+# Instantiate global dicationary for load curve functions
+lcid_dictionary = dict()
+
+
 # Entry point (main export function)
 def ExportCMB(spec):
     '''
@@ -262,7 +270,7 @@ def ExportCMB(spec):
 
     analysis_dict = {
         'Incompressible Navier-Stokes Analysis': 'cc_navierstokes',
-        'NS and Energy Equation Analysis': 'energy TBD'
+        'NS and Energy Equation Analysis': 'cc_navierstokes'
     }
     if analysis_type not in analysis_dict:
         print 'Unsupported analysis type \"%s\"" - no output generated' % \
@@ -289,6 +297,9 @@ def ExportCMB(spec):
         # Process elements in section_table
         for section_config in section_table:
             ok = write_section(manager, section_config, categories, out)
+
+        # Write load curves last, since ids are assigned when writing atts
+        write_load_curves(manager, out)
 
         out.write('\n')
         out.write('end\n')
@@ -353,6 +364,10 @@ def write_turbulence_section(manager, categories, out):
         return False
 
     attribute = turb_att_list[0] # there should only be a single instance of this attribute
+
+    if not attribute.isMemberOf(categories):
+        return True
+
     item = attribute.find("Method")
     if item is None:
         return False
@@ -511,17 +526,24 @@ def write_bc_section(manager, section_config, categories, out):
     out.write('  %s\n' % section_config.title)
 
     for att in att_list:
+        if not att.isMemberOf(categories):
+            continue
+
         ent_set = att.associatedEntitiesSet()
         # TODO sort by sideset number (is this a UserData thing?)
         for ent in ent_set:
             sideset = get_id_from_name(ent.name())
-            load_curve = -1  # TODO
+
+            item = att.find('LoadCurve')
+            lcid = get_loadcurve_id(item)
+            if lcid is None:
+                lcid = -1
 
             # TODO use format table? Only for non-standard form
             item = att.find('Scale')
             scale_item = smtk.attribute.to_concrete(item)
             scale = get_item_value(scale_item)
-            out.write('    sideset %s %d %s\n' % (sideset, load_curve, scale))
+            out.write('    sideset %s %d %s\n' % (sideset, lcid, scale))
 
     out.write('  end\n')
     return True
@@ -541,6 +563,9 @@ def write_distance_section(manager, categories, out):
 
     # Write walls first (no load curve, zero scale)
     for att in wlist:
+        if not att.isMemberOf(categories):
+            continue
+
         ent_set = att.associatedEntitiesSet()
         # TODO sort by sideset number
         for ent in ent_set:
@@ -553,12 +578,16 @@ def write_distance_section(manager, categories, out):
         # TODO sort by sideset number
         for ent in ent_set:
             sideset = get_id_from_name(ent.name())
-            load_curve = -1  # TODO get load curve number
+
+            item = att.find('LoadCurve')
+            lcid = get_loadcurve_id(item)
+            if lcid is None:
+                lcid = -1
 
             item = att.find('Scale')
             scale_item = smtk.attribute.to_concrete(item)
             scale = get_item_value(scale_item)
-            out.write('    sideset %s %d %s\n' % (sideset, load_curve, scale))
+            out.write('    sideset %s %d %s\n' % (sideset, lcid, scale))
 
     out.write('  end\n')
     return True
@@ -589,6 +618,9 @@ def write_vector_bc_section(manager, config, categories, out):
     for att_type, label in config.attribute_types_labels:
         att_list = manager.findAttributes(att_type)
         for att in att_list:
+            if not att.isMemberOf(categories):
+                continue
+
             ent_set = att.associatedEntitiesSet()
             for ent in ent_set:
                 sideset = get_id_from_name(ent.name())
@@ -616,7 +648,12 @@ def write_vector_bc_section(manager, config, categories, out):
         ent_att_list = bc_dict.get(sideset)
         for att in ent_att_list:
             label = label_dict.get(att.type())
-            lcid = -1  # TODO load curve
+
+            item = att.find('LoadCurve')
+            lcid = get_loadcurve_id(item)
+            if lcid is None:
+                lcid = -1
+
             item = att.find('Scale')
             double_item = smtk.attribute.to_concrete(item)
             scale = get_item_value(double_item)
@@ -635,6 +672,9 @@ def write_initial_conditions_section(manager, categories, out):
     att_type = 'InitialConditions'
     att_list = manager.findAttributes(att_type)
     att = att_list[0]
+    if not att.isMemberOf(categories):
+        True
+
     item = att.find('InitialConditions')
     group_item = smtk.attribute.to_concrete(item)
 
@@ -664,7 +704,8 @@ def write_initial_conditions_section(manager, categories, out):
             #print 'WARNING: No %s item found' % item_config.name
             continue
 
-        # TODO Check item categories
+        if not item.isMemberOf(categories):
+            continue
 
         # Filter turbulence ICs based on turb_method
         if item_config.name == 'tke' and turb_method not in ['rng_ke', 'sst_kw']:
@@ -707,6 +748,9 @@ def write_body_force_section(manager, categories, out):
         # Also populate model_domains set if needed
         unassociated_att = None
         for att in att_list:
+            if not att.isMemberOf(categories):
+                continue
+
             if 0 == att.numberOfAssociatedEntities():
                 if unassociated_att is None:
                     unassociated_att = att
@@ -761,11 +805,11 @@ def write_body_force(att, entity, out):
     out.write('    set %s\n' % get_id_from_name(entity.name()))
     # Load curve item has same name as attribute (our policy)
     item = att.find(att_type)
-    if item.isEnabled():
-        double_item = smtk.attribute.to_concrete(item)
-        expression_ref = double_item.expressionReference()
-        load_curve = -1 # TODO, need to figure out id
-        out.write('    lcid %d\n' % load_curve)
+    loadcurve_id = get_loadcurve_id(item)
+    if loadcurve_id is not None:
+        out.write('    lcid %d\n' % loadcurve_id)
+
+    # Value is 'Scale' item
     keywords = att_keywords[att_type]
     item = att.find('Scale')
     double_item = smtk.attribute.to_concrete(item)
@@ -787,7 +831,9 @@ def write_item(manager, categories, out, attribute_type, *item_names):
         print 'Item %s:%s not found' % (attribute_type, '/'.join(item_names))
         return False
 
-    # TODO Check categories
+    # Check categories
+    if not item.isMemberOf(categories):
+        return
 
     item_config = find_item_config(attribute_type, *item_names)
     if item_config is None:
@@ -880,6 +926,11 @@ def write_section(manager, section_config, categories, out):
         print 'WARNING - Found %d attributes of type %s - using first one' % \
             (len(att_list), section_config.attribute_type)
     att = att_list[0]
+
+    # If not in categories, don't write the section
+    if not att.isMemberOf(categories):
+        return True
+
     parent = att
 
     if section_config.group_name is not None:
@@ -919,7 +970,9 @@ def write_section(manager, section_config, categories, out):
             print 'WARNING: No %s item found' % item_config.name
             continue
 
-        # TODO Check item categories
+        # Check item categories
+        if not att.isMemberOf(categories):
+            continue
 
         write_item_tree(item, item_config, format_string, out)
 
@@ -1035,3 +1088,61 @@ def get_domain_sets(model):
                 #print 'domainset: %s %d' % (model_group_item.name(), model_group_item.id())
                 domain_sets.add(model_item)
     return frozenset(domain_sets)
+
+
+def get_loadcurve_id(item):
+    '''Returns load curve id for smtk.attribute.DoubleItem
+
+    Uses global lcid_dictionary.
+    '''
+    if item is None or not item.isEnabled():
+        return None
+
+    double_item = smtk.attribute.to_concrete(item)
+    if double_item is None:
+        print 'ERROR: %s item is not DoubleItem' % item.name()
+        return None
+
+    if not double_item.isExpression(0):
+        print 'WARNING: %s item is not expression' % item.name()
+        return None
+    if not double_item.isSet(0):
+        return None
+
+    exp_ref = double_item.expressionReference(0)
+    exp_att = exp_ref.value(0)
+    name = exp_att.name()
+
+    global lcid_dictionary
+    lcid = lcid_dictionary.get(name)
+    if lcid is None:
+        lcid = len(lcid_dictionary) + 1
+        print 'Assign lcid %d to function \"%s\"' % (lcid, name)
+        lcid_dictionary[name] = lcid
+    return lcid
+
+
+def write_load_curves(manager, out):
+    '''Writes all load curves in the lcid_dictionary.
+
+    '''
+    # Sort by id (dictionary value)
+    lc_tuples = sorted(lcid_dictionary.items(), key=lambda t:t[1])
+    for name, lcid in lc_tuples:
+        att = manager.findAttribute(name)
+        out.write('\n')
+        out.write('  # Load Curve \"%s\"\n' % name)
+        out.write('  load_curve\n')
+        out.write('    id %s\n' % lcid)
+
+        val_pairs_item = att.find('ValuePairs')
+        val_pairs_group = smtk.attribute.GroupItem.CastTo(val_pairs_item)
+        x_item = val_pairs_group.find('X')
+        x_item = smtk.attribute.DoubleItem.CastTo(x_item)
+        val_item = val_pairs_group.find('Value')
+        val_item = smtk.attribute.DoubleItem.CastTo(val_item)
+        num_vals = x_item.numberOfValues()
+        for i in range(num_vals):
+          out.write('      %.10e %.10e\n' % (x_item.value(i), val_item.value(i)))
+
+        out.write('  end\n')
