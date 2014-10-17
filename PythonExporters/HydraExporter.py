@@ -138,7 +138,10 @@ format_table = {
     ],
     'StatusInformation': [
         fmt('minmaxfrequency', 'ttyi'),
-        fmt('PrintLevel', 'prtlev')
+        fmt('tifrequency', 'thti'),
+        fmt('PrintLevel', 'prtlev', [
+            fmt('hcfrequency', 'prti')
+        ]),
     ],
     'BasicTurbulenceModel': [
         fmt('Method', 'turbulence', [
@@ -343,7 +346,17 @@ def write_output_section(manager, categories, out):
     write_item(manager, categories, out, 'Output', 'type')  # filetype
     write_item(manager, categories, out, 'Output', 'FieldOutput', 'frequency')  # plti
     write_item(manager, categories, out, 'StatusInformation', 'minmaxfrequency')  # ttyi
-    write_item(manager, categories, out, 'StatusInformation', 'PrintLevel')  # prtlev
+    write_item(manager, categories, out, 'StatusInformation', 'tifrequency')  # thti
+
+    #write_item(manager, categories, out, 'StatusInformation', 'PrintLevel')  # prtlev
+    # Because PrintLevel has conditional children, use write_item_tree() method
+    # Suggests some better refactoring of write_item() and write_item_tree()
+    item = find_item(manager, 'StatusInformation', 'PrintLevel')
+    if item.isMemberOf(categories):
+        item_config = find_item_config('StatusInformation', 'PrintLevel')
+        format_string = '  %s %s\n'
+        write_item_tree(item, item_config, format_string, out)
+
     write_item(manager, categories, out, 'Output', 'RestartOutput', 'frequency')  # dump
     return True
 
