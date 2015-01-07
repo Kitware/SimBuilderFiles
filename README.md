@@ -1,4 +1,4 @@
 SimBuilderTemplates
 ===================
 
-XML template files for SimBuilder
+XML template and Python export script files for SimBuilder.
