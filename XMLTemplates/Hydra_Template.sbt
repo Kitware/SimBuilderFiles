@@ -762,6 +762,7 @@
             <Value Enum="enthalpy">enthalpy</Value>
             <Value Enum="enstrophy">enstrophy</Value>
             <Value Enum="helicity">helicity</Value>
+            <Value Enum="lambda">lambda</Value>
             <Value Enum="pressure">pressure</Value>
             <Value Enum="procid">procid</Value>
             <Value Enum="temp">temp</Value>
