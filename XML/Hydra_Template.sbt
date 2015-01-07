@@ -1376,7 +1376,7 @@
           <DefaultValue>10</DefaultValue>
           <RangeInfo>
             <Min Inclusive="true">1</Min>
-            <Max Inclusive="true">10e9</Max>
+            <Max Inclusive="true">1000000000</Max>
           </RangeInfo>
           <DefaultValue>0</DefaultValue>
         </Int>
