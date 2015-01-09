@@ -566,7 +566,7 @@ def  write_hydrostat_section(manager, categories, out):
     scale_item = smtk.attribute.to_concrete(item)
     scale = scale_item.value(0)
 
-    output = '    nodeset id%d %d %s\n' % (nsid, lcid, scale)
+    output = '    nodesetid %d %d %s\n' % (nsid, lcid, scale)
     out.write(output)
     out.write('  end\n')
 
