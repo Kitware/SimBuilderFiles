@@ -39,10 +39,16 @@
 
     <AttDef Type="hydrostat" BaseType="" Version="0" Unique="true"> <!-- acbauer - this needs a node set id -->
       <ItemDefinitions>
-        <Group Name="Hydrostat" Label="Hydrostatic pressure" NumberOfRequiredGroups="1">
+        <Group Name="Hydrostat" Label="Hydrostatic pressure" Optional="true" NumberOfRequiredGroups="1">
           <ItemDefinitions>
+            <Int Name="NodesetId" Label="nodeset Id" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+              <BriefDescription>(hydrostat::nodeset [setId])</BriefDescription>
+              <Categories>
+                <Cat>General</Cat>
+              </Categories>
+            </Int>
             <Double Name="Value" Label="Load Curve" Version="0" AdvanceLevel="1" NumberOfRequiredValues="1" Optional="true" IsEnabledByDefault="false">
-              <BriefDescription>(hydrostat::nodeset [amplitude])</BriefDescription>
+              <BriefDescription>(hydrostat::nodeset [loadCurveId])</BriefDescription>
               <DetailedDescription>Prescribe the hydrostatic pressure. This may be used in conjunction with prescribed pressure
               boundary conditions, or by itself. When used by itself, the hstat keyword plays two roles. It makes
               the pressure-Poisson equation non-singular and it permits the pressure for the system to be uniquely
@@ -55,7 +61,7 @@
               </Categories>
             </Double>
             <Double Name="Scale" Label="Scale" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-              <BriefDescription>(hydrostat::nodeset [loadCurveId])</BriefDescription>
+              <BriefDescription>(hydrostat::nodeset [amplitude])</BriefDescription>
               <Categories>
                 <Cat>General</Cat>
               </Categories>
