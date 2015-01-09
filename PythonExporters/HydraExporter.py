@@ -55,6 +55,7 @@ section_table = [
     ss('LoadBalancer', 'load_balance'),
     custom_section('output'),
     ss('energy'),
+    custom_section('hydrostat'),
     custom_section('turbulence'),
     ss('Material', 'material', comment='Material model setup & assignment to sets'),
     # TODO materialset, probably a custom_section (or part of a custom Material section)
@@ -526,6 +527,50 @@ def write_histvar_section(manager, categories, out):
     out.write('  end\n')
     return True
 
+def  write_hydrostat_section(manager, categories, out):
+    '''
+    Writes hydrostat section
+    '''
+    att_list = manager.findAttributes('hydrostat')
+    if not att_list:
+        print 'WARNING - expected hydrostat attribute'
+        return False
+
+    att = att_list[0]
+    if not att.isMemberOf(categories):
+        return True
+
+    item = att.find('Hydrostat')
+    if item is None:
+        return False
+
+    if not item.isEnabled():
+        return True
+
+    out.write('\n')
+    out.write('  # Hydrostatic pressure\n')
+    out.write('  hydrostat\n')
+
+    group_item = smtk.attribute.to_concrete(item)
+    item = group_item.find('NodesetId')
+    nsid_item = smtk.attribute.to_concrete(item)
+    nsid = nsid_item.value(0)
+
+    lcid = -1
+    item = group_item.find('Value')
+    if item.isEnabled():
+        lcid_item = smtk.attribute.to_concrete(item)
+        lcid = get_loadcurve_id(lcid_item)
+
+    item = group_item.find('Scale')
+    scale_item = smtk.attribute.to_concrete(item)
+    scale = scale_item.value(0)
+
+    output = '    nodeset id%d %d %s\n' % (nsid, lcid, scale)
+    out.write(output)
+    out.write('  end\n')
+
+
 def write_bc_section(manager, section_config, categories, out):
     '''
     Writes boundary condition section
@@ -909,6 +954,7 @@ def write_section(manager, section_config, categories, out):
             'output':   write_output_section,
             'turbulence': write_turbulence_section,
             'histvar':  write_histvar_section,
+            'hydrostat': write_hydrostat_section,
             'velocity': write_velocity_section,
             'InitialConditions': write_initial_conditions_section,
             'BodyForce': write_body_force_section
