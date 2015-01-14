@@ -41,7 +41,7 @@
       <ItemDefinitions>
         <Group Name="Hydrostat" Label="Hydrostatic pressure" Optional="true" NumberOfRequiredGroups="1">
           <ItemDefinitions>
-            <Int Name="NodesetId" Label="nodeset Id" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+            <Int Name="NodesetId" Label="Nodeset Id" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
               <BriefDescription>(hydrostat::nodeset [setId])</BriefDescription>
               <Categories>
                 <Cat>General</Cat>
