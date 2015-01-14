@@ -284,7 +284,7 @@ def ExportCMB(spec):
     categories = list(manager.analysisCategories(analysis_type))
     print 'categories', categories
     if not categories:
-        print 'WARMING: No categories found for analysis \"%s\"' % \
+        print 'WARNING: No categories found for analysis \"%s\"' % \
           analysis_type
         #return False
 
@@ -784,6 +784,16 @@ def write_initial_conditions_section(manager, categories, out):
         else:
             value = get_item_value(concrete_item)
             out.write(format_string % (item_config.keyword, value))
+
+    # if the energy equation is enabled we need to also specify
+    # their initial conditions
+    if "Energy Equation" in categories:
+        item = group_item.find('energyictype')
+        ictype = smtk.attribute.to_concrete(item)
+        item = group_item.find('energyicvalue')
+        icvalue = smtk.attribute.to_concrete(item)
+        out.write('    %s %s\n' % (get_item_value(ictype), get_item_value(icvalue)))
+
 
     out.write('  end\n')
     return True

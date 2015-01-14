@@ -339,23 +339,20 @@
                 <Cat>Incompressible Navier-Stokes</Cat>
               </Categories>
             </Double>
-            <Double Name="temperature" Label="Temperature" Version="0" NumberOfRequiredValues="1">
-              <DefaultValue>0</DefaultValue>
-              <BriefDescription>(initial::temperature)</BriefDescription>
+            <String Name="energyictype" Label="Energy equation initial condition type" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+              <BriefDescription>(initial::temperature, initial::int_energy or initial::enthalpy type)</BriefDescription>
+              <DiscreteInfo DefaultIndex="0">
+                <Value Enum="Temperature">temperature</Value>
+                <Value Enum="Internal Energy">int_energy</Value>
+                <Value Enum="Enthalpy">enthalpy</Value>
+              </DiscreteInfo>
               <Categories>
                 <Cat>Energy Equation</Cat>
               </Categories>
-            </Double>
-            <Double Name="internalenergy" Label="Internal Energy" Version="0" NumberOfRequiredValues="1">
+            </String>
+            <Double Name="energyicvalue" Label="Energy equation initial condition value" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
               <DefaultValue>0</DefaultValue>
-              <BriefDescription>(initial::int_energy)</BriefDescription>
-              <Categories>
-                <Cat>Energy Equation</Cat>
-              </Categories>
-            </Double>
-            <Double Name="enthalpy" Label="Enthalpy" Version="0" NumberOfRequiredValues="1">
-              <DefaultValue>0</DefaultValue>
-              <BriefDescription>(initial::enthalpy)</BriefDescription>
+              <BriefDescription>(initial::[type])</BriefDescription>
               <Categories>
                 <Cat>Energy Equation</Cat>
               </Categories>
