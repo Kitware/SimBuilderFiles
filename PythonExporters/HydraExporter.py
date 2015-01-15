@@ -161,7 +161,8 @@ format_table = {
         fmt('Velocity', ['velx', 'vely', 'velz']),
         fmt('tv', 'turbnu'),
         fmt('tke'),
-        fmt('itdr', 'eps')
+        fmt('itdr', 'eps'),
+        fmt('temperature')
     ],
     'ppesolver': [
         fmt('ppetype', 'type'),
@@ -784,16 +785,6 @@ def write_initial_conditions_section(manager, categories, out):
         else:
             value = get_item_value(concrete_item)
             out.write(format_string % (item_config.keyword, value))
-
-    # if the energy equation is enabled we need to also specify
-    # their initial conditions
-    if "Energy Equation" in categories:
-        item = group_item.find('energyictype')
-        ictype = smtk.attribute.to_concrete(item)
-        item = group_item.find('energyicvalue')
-        icvalue = smtk.attribute.to_concrete(item)
-        out.write('    %s %s\n' % (get_item_value(ictype), get_item_value(icvalue)))
-
 
     out.write('  end\n')
     return True

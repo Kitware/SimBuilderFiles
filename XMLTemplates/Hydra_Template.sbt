@@ -287,7 +287,7 @@
       <ItemDefinitions>
         <Group Name="InitialConditions" Label="Initial Conditions" NumberOfRequiredGroups="1">
           <ItemDefinitions>
-            <Double Name="Velocity" Label="Initial velocity" Version="0" NumberOfRequiredValues="3">
+            <Double Name="Velocity" Label="Velocity" Version="0" NumberOfRequiredValues="3">
               <BriefDescription>(initial::{velx,vely,velz})</BriefDescription>
               <DefaultValue>0</DefaultValue>
               <ComponentLabels>
@@ -299,7 +299,7 @@
                 <Cat>Incompressible Navier-Stokes</Cat>
               </Categories>
             </Double>
-            <Double Name="tke" Label="Initial turbulent kinetic energy" Version="0" NumberOfRequiredValues="1">
+            <Double Name="tke" Label="Turbulent kinetic energy" Version="0" NumberOfRequiredValues="1">
               <BriefDescription>Turbulent kinetic energy for k-e and k-w models (initial::tke)</BriefDescription>
               <DefaultValue>0</DefaultValue>
               <RangeInfo>
@@ -309,7 +309,7 @@
                 <Cat>Incompressible Navier-Stokes</Cat>
               </Categories>
             </Double>
-            <Double Name="itdr" Label="Initial turbulent dissipation rate" Version="0" NumberOfRequiredValues="1">
+            <Double Name="itdr" Label="Turbulent dissipation rate" Version="0" NumberOfRequiredValues="1">
               <DefaultValue>0</DefaultValue>
               <BriefDescription>Initial turbulent dissipation rate for k-e models (initial::eps)</BriefDescription>
               <RangeInfo>
@@ -339,24 +339,14 @@
                 <Cat>Incompressible Navier-Stokes</Cat>
               </Categories>
             </Double>
-            <String Name="energyictype" Label="Energy equation initial condition type" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
-              <BriefDescription>(initial::temperature, initial::int_energy or initial::enthalpy type)</BriefDescription>
-              <DiscreteInfo DefaultIndex="0">
-                <Value Enum="Temperature">temperature</Value>
-                <Value Enum="Internal Energy">int_energy</Value>
-                <Value Enum="Enthalpy">enthalpy</Value>
-              </DiscreteInfo>
-              <Categories>
-                <Cat>Energy Equation</Cat>
-              </Categories>
-            </String>
-            <Double Name="energyicvalue" Label="Energy equation initial condition value" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+            <Double Name="temperature" Label="Temperature" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
               <DefaultValue>0</DefaultValue>
-              <BriefDescription>(initial::[type])</BriefDescription>
+              <BriefDescription>(initial::temperature)</BriefDescription>
               <Categories>
                 <Cat>Energy Equation</Cat>
               </Categories>
             </Double>
+
           </ItemDefinitions>
         </Group>
       </ItemDefinitions>
