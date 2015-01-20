@@ -69,6 +69,7 @@ section_table = [
     bc('Pressure', 'pressure'),
     #custom_section('distance'),  # Wall and Penetration att types
     bc('TurbulentViscosity', 'turbnu'),
+    bc('HeatFlux', 'heatflux'),
     custom_section('velocity'),  # 6 different att types
     #vector_bc('velocity', [
     #        ('VelXBoundaryCondition', 'velx'),
