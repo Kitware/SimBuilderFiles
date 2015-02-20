@@ -119,9 +119,9 @@
             <Cat>Energy Equation</Cat>
           </Categories>
         </Double>
-        <Double Name="mu" Label="Mu" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+        <Double Name="mu" Label="Molecular viscosity" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <DefaultValue>1.0</DefaultValue>
-          <BriefDescription>Molecular viscosity (material::mu)</BriefDescription>
+          <BriefDescription>(material::mu)</BriefDescription>
           <RangeInfo>
             <Min Inclusive="false">0</Min>
           </RangeInfo>
@@ -138,9 +138,9 @@
              </Categories>
              </Double>
         -->
-        <Double Name="beta" Label="Beta" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
+        <Double Name="beta" Label="Thermal expansion coefficient" Version="0" AdvanceLevel="0" NumberOfRequiredValues="1">
           <DefaultValue>0.0</DefaultValue>
-          <BriefDescription>Coefficient of thermal expansion (material::beta)</BriefDescription>
+          <BriefDescription>(material::beta)</BriefDescription>
           <Categories>
             <Cat>Energy Equation</Cat>
           </Categories>

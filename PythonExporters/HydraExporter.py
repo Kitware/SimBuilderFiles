@@ -792,12 +792,13 @@ def write_initial_conditions_section(manager, categories, out):
 
 def write_body_force_section(manager, categories, out):
     '''
-    Write the body_force, boussinesqforce and porous_drag section
-    of the cntl file.
+    Write the body_force (gravity source), heat_source, boussinesqforce and porous_drag
+    section of the cntl file. If no domain set is associated with a body force
+    then it is associated with all domain sets with a -1 for the set id. If there
+    are other attributes of the same type that are associated with a domain set then
+    the unassociated domain set is not written out.
     '''
     att_types = ['GravityForce', 'BoussinesqForce', 'porous_drag', 'HeatSource']
-    model = None  # if needed for un-associated attributes
-    domain_sets = None  # ditto (only created if needed)
     for att_type in att_types:
         att_list = manager.findAttributes(att_type)
         if not att_list:
@@ -805,50 +806,38 @@ def write_body_force_section(manager, categories, out):
 
         # Traverse once to find any unassociated attributes
         # These become "default" value for domain sets
-        # Also populate model_domains set if needed
         unassociated_att = None
         for att in att_list:
             if not att.isMemberOf(categories):
                 continue
 
             if 0 == att.numberOfAssociatedEntities():
-                if unassociated_att is None:
-                    unassociated_att = att
-                else:
+                if unassociated_att:
                     msg = 'WARNING: more than one unassociated %s attribute.' % \
-                        att_type
+                          att_type
                     msg += ' Using \"%s\" and ignoring \"%s\"' % \
-                        (unassociated_att.name(), att.name())
+                           (unassociated_att.name(), att.name())
                     print msg
-            elif model is None:
-                # Retrieve set of all model domain sets
-                entities = att.associatedEntitiesSet()
-                model = entities.pop().model()
-                #print 'Retrieved model'
-                domain_sets = get_domain_sets(model)
+                unassociated_att = att
 
         # Traverse again to actually write the output.
         # Keep track of which domains get output.
-        unused_domain_sets = set()
-        if domain_sets is not None:
-            unused_domain_sets = set(domain_sets)
+        have_associated_entities = False
         for att in att_list:
             entities = att.associatedEntitiesSet()
             for entity in entities:
-                unused_domain_sets.discard(entity)
                 write_body_force(att, entity, out)
+                have_associated_entities = True
 
         # Write default values for unassociated domain sets
         if unassociated_att is not None:
-            if domain_sets is None:
+            if have_associated_entities:
                 msg = 'WARNING: Cannot write body force %s for unassociated attribute %s.' % \
                     (unassociated_att.type(), unassociated_att.name())
-                msg = ' This version of software only supports body force' + \
-                    ' attributes that are associated to one or more model entities.'
+                msg += ' This is because there exists an associated body force attribute that would conflict.'
                 print msg
             else:
-                for entity in unused_domain_sets:
-                    write_body_force(att, entity, out)
+                write_body_force(att, None, out)
 
 
 def write_body_force(att, entity, out):
@@ -857,12 +846,21 @@ def write_body_force(att, entity, out):
     '''
     #print 'Writing', att.type(), 'for', entity.name()
     att_keywords = {'GravityForce' : ['fx', 'fy', 'fz'],
-                     'BoussinesqForce' : ['gx', 'gy', 'gz'],
-                     'porous_drag' : ['amp'], 'HeatSource' : ['Q'] }
+                    'BoussinesqForce' : ['gx', 'gy', 'gz'],
+                    'porous_drag' : ['amp'],
+                    'HeatSource' : ['Q'] }
+    att_cards = {'GravityForce' : 'body_force',
+                 'BoussinesqForce' : 'boussinesqforce',
+                 'porous_drag' : 'porous_drag',
+                 'HeatSource' : 'heat_source' }
     att_type = att.type()
     out.write('\n')
-    out.write('  %s\n' % att_type)
-    out.write('    set %s\n' % get_id_from_name(entity.name()))
+    out.write('  %s\n' % att_cards[att_type])
+    if entity:
+        out.write('    set %s\n' % get_id_from_name(entity.name()))
+    else:
+        out.write('    set -1\n') # all entities
+
     # Load curve item has same name as attribute (our policy)
     item = att.find(att_type)
     loadcurve_id = get_loadcurve_id(item)
@@ -1121,35 +1119,6 @@ def find_item_config(attribute_type, *item_names):
             config_list = matching_config.item_format_list
 
     return matching_config
-
-
-def get_domain_sets(model):
-    '''Returns frozenset of model items that are domain sets.
-
-    Current logic presumes that all groups with regions are domain sets.
-    This function uses smtk.model.GroupItem.CastTo(), which is not
-    implemented on smtk:master as of August 2014. If this method is not
-    available, this function returns None for its output.
-    '''
-    # Confirm that smtk can generate the set
-    if not hasattr(smtk.model.GroupItem, 'CastTo'):
-        return None
-
-    domain_sets = set()
-    item_map = model.itemMap()
-    #print 'item_map', item_map
-    for model_item in item_map.values():
-        #print 'model_item', model_item.type(), model_item.name()
-        if (smtk.model.Item.Type.GROUP == model_item.type()):
-            model_group_item = smtk.model.GroupItem.CastTo(model_item)
-            #print 'model_group_item %s 0x%x' % (model_group_item.name(), model_group_item.entityMask())
-            mask = model_group_item.entityMask()
-            volume_mask = 0x8
-            if volume_mask == (mask & volume_mask):
-                #print 'domainset: %s %d' % (model_group_item.name(), model_group_item.id())
-                domain_sets.add(model_item)
-    return frozenset(domain_sets)
-
 
 def get_loadcurve_id(item):
     '''Returns load curve id for smtk.attribute.DoubleItem
