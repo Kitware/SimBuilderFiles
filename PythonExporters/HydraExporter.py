@@ -464,7 +464,7 @@ def write_plotvar_section(manager, categories, out, name):
     for att in ss_att_list:
         item = att.find('varname')
         var_item = smtk.attribute.to_concrete(item)
-        entities = att.associatedEntitiesSet()
+        entities = att.associatedEntities()
         for entity in entities:
             #out.write('    block %s\n' % get_id_from_name(entity.name()))
             t = ('side ', get_id_from_name(entity.name()), var_item.value(0))
@@ -515,7 +515,7 @@ def write_histvar_section(manager, categories, out):
     for att in ss_att_list:
         item = att.find('varname')
         var_item = smtk.attribute.to_concrete(item)
-        entities = att.associatedEntitiesSet()
+        entities = att.associatedEntities()
         for entity in entities:
             #out.write('    block %s\n' % get_id_from_name(entity.name()))
             t = ('side ', get_id_from_name(entity.name()), var_item.value(0))
@@ -589,7 +589,7 @@ def write_bc_section(manager, section_config, categories, out):
         if not att.isMemberOf(categories):
             continue
 
-        ent_set = att.associatedEntitiesSet()
+        ent_set = att.associatedEntities()
         # TODO sort by sideset number (is this a UserData thing?)
         for ent in ent_set:
             sideset = get_id_from_name(ent.name())
@@ -626,7 +626,7 @@ def write_distance_section(manager, categories, out):
         if not att.isMemberOf(categories):
             continue
 
-        ent_set = att.associatedEntitiesSet()
+        ent_set = att.associatedEntities()
         # TODO sort by sideset number
         for ent in ent_set:
             sideset = get_id_from_name(ent.name())
@@ -634,7 +634,7 @@ def write_distance_section(manager, categories, out):
 
     # Then write penetration atts
     for att in plist:
-        ent_set = att.associatedEntitiesSet()
+        ent_set = att.associatedEntities()
         # TODO sort by sideset number
         for ent in ent_set:
             sideset = get_id_from_name(ent.name())
@@ -681,7 +681,7 @@ def write_vector_bc_section(manager, config, categories, out):
             if not att.isMemberOf(categories):
                 continue
 
-            ent_set = att.associatedEntitiesSet()
+            ent_set = att.associatedEntities()
             for ent in ent_set:
                 sideset = get_id_from_name(ent.name())
                 ent_att_list = bc_dict.get(sideset)
@@ -824,7 +824,7 @@ def write_body_force_section(manager, categories, out):
         # Keep track of which domains get output.
         have_associated_entities = False
         for att in att_list:
-            entities = att.associatedEntitiesSet()
+            entities = att.associatedEntities()
             for entity in entities:
                 write_body_force(att, entity, out)
                 have_associated_entities = True
@@ -1045,7 +1045,7 @@ def write_section(manager, section_config, categories, out):
         out.write('    id %i\n' % materialSetCounter)
         materialSetCounter = materialSetCounter+1
         out.write('    material %i\n' % att.materialId)
-        entities = att.associatedEntitiesSet()
+        entities = att.associatedEntities()
         for entity in entities:
             out.write('    block %s\n' % get_id_from_name(entity.name()))
         out.write('  end\n')
